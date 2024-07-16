@@ -5,13 +5,14 @@ import { initializeApp } from 'firebase/app'
 
 export const getFirebaseApp = () => {
     const firebaseConfig = {
-        apiKey: 'AIzaSyBwYRO37_PzU_9Dks9iPL2xmFyJapGd-JY',
-        authDomain: 'chat-gpt-2-1629b.firebaseapp.com',
-        projectId: 'chat-gpt-2-1629b',
-        storageBucket: 'chat-gpt-2-1629b.appspot.com',
-        messagingSenderId: '1099289868444',
-        appId: '1:1099289868444:web:b70d2520a7fd20283f1559',
-    }
+        apiKey: "AIzaSyDDLd9BqDenAFef-OuF2zBS2JNVerR1G-M",
+        authDomain: "calendarrecipe.firebaseapp.com",
+        projectId: "calendarrecipe",
+        storageBucket: "calendarrecipe.appspot.com",
+        messagingSenderId: "600725474057",
+        appId: "1:600725474057:web:339ef0d9d179265d9721d8",
+        measurementId: "G-JL9NRBNN82"
+      };
 
     // Initialize Firebase
     return initializeApp(firebaseConfig)
