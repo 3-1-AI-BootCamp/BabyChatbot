@@ -6,18 +6,19 @@ import { StatusBar } from 'expo-status-bar'
 import { MaterialIcons, FontAwesome, Ionicons } from '@expo/vector-icons'
 import { Bubble, GiftedChat } from 'react-native-gifted-chat'
 import { useTheme } from '../themes/ThemeProvider'
+import axios from 'axios';
 import { API_KEY } from '@env';
 
 const Chat = ({ navigation }) => {
     const [inputMessage, setInputMessage] = useState('')
-    const [outputMessage, setOutputMessage] = useState(
-        'Results should be shown here.'
-    )
+    const [outputMessage, setOutputMessage] = useState('')
+    
     const [isTyping, setIsTyping] = useState(false)
-
     const [messages, setMessages] = useState([])
     const { colors } = useTheme()
 
+
+    // 채팅 메시지의 외관을 커스터마이즈
     const renderMessage = (props) => {
         const { currentMessage } = props
 
@@ -89,131 +90,44 @@ const Chat = ({ navigation }) => {
         return <Bubble {...props} />
     }
 
-    const generateText = () => {
-        setIsTyping(true)
-        const message = {
-            _id: Math.random().toString(36).substring(7),
-            text: inputMessage,
-            createAt: new Date(),
-            user: { _id: 1 },
-        }
-
-        setMessages((previousMessage) =>
-            GiftedChat.append(previousMessage, [message])
-        )
-
-        fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${API_KEY}`,
-            },
-            body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                    {
-                        role: 'user',
-                        content: inputMessage,
-                    },
-                ],
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('API Response:', data)
-
-                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-                    throw new Error("Invalid API response")
-                }
-
-                console.log(data.choices[0].message.content)
-                setInputMessage('')
-                setOutputMessage(data.choices[0].message.content.trim())
-
-                const message = {
-                    _id: Math.random().toString(36).substring(7),
-                    text: data.choices[0].message.content.trim(),
-                    createAt: new Date(),
-                    user: { _id: 2, name: 'ChatGPT' },
-                }
-
-                setIsTyping(false)
-                setMessages((previousMessage) =>
-                    GiftedChat.append(previousMessage, [message])
-                )
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error)
-                setIsTyping(false)
-            })
-    }
-
-    const generateImages = () => {
-        setIsTyping(true)
-        const message = {
+    // 텍스트 기반 응답을 생성
+    const submitHandler = async () => {
+        if (!inputMessage.trim()) return;
+    
+        setIsTyping(true);
+    
+        // 사용자 메시지 추가
+        const userMessage = {
             _id: Math.random().toString(36).substring(7),
             text: inputMessage,
             createdAt: new Date(),
             user: { _id: 1 },
+        };
+        setMessages(previousMessages => GiftedChat.append(previousMessages, [userMessage]));
+    
+        try {
+            const response = await axios.post('http://192.168.0.5:8080/generate', {
+                message: inputMessage
+            });
+            console.log('Response:', response.data);
+            
+            // 봇 메시지 추가
+            const botMessage = {
+                _id: Math.random().toString(36).substring(7),
+                text: response.data, // 서버 응답을 텍스트로 사용
+                createdAt: new Date(),
+                user: { _id: 2, name: 'ChatBot' },
+            };
+            setMessages(previousMessages => GiftedChat.append(previousMessages, [botMessage]));
+        } catch (error) {
+            console.error('Error sending message:', error);
+        } finally {
+            setIsTyping(false);
+            setInputMessage(''); // 입력 필드 초기화
         }
+    };
 
-        setMessages((previousMessage) =>
-            GiftedChat.append(previousMessage, [message])
-        )
-
-        fetch('https://api.openai.com/v1/images/generations', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${API_KEY}`,
-            },
-            body: JSON.stringify({
-                prompt: inputMessage,
-                n: 1,
-                size: '1024x1024',
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('API Response:', data)
-
-                if (!data.data || !data.data[0] || !data.data[0].url) {
-                    throw new Error("Invalid API response")
-                }
-
-                console.log(data.data[0].url)
-                setInputMessage('')
-                setOutputMessage(data.data[0].url)
-                setIsTyping(false)
-
-                data.data.forEach((item) => {
-                    const message = {
-                        _id: Math.random().toString(36).substring(7),
-                        text: 'Image',
-                        createdAt: new Date(),
-                        user: { _id: 2, name: 'ChatGPT' },
-                        image: item.url,
-                    }
-
-                    setMessages((previousMessage) =>
-                        GiftedChat.append(previousMessage, [message])
-                    )
-                })
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error)
-                setIsTyping(false)
-            })
-    }
-
-    const submitHandler = () => {
-        if (inputMessage.toLowerCase().startsWith('generate image')) {
-            generateImages()
-        } else {
-            generateText()
-        }
-    }
-
+    // 사용잦 입력 값을 inputMessage 상태로 업데이트(input 란에 텍스트가 올라오면 작동)
     const handleInputText = (text) => {
         setInputMessage(text)
     }
@@ -339,6 +253,7 @@ const Chat = ({ navigation }) => {
         </SafeAreaView>
     )
 }
+
 
 const styles = StyleSheet.create({
     backgroundImage: {
