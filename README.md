@@ -18,3 +18,6 @@
 ### cd front
 ### npm install
 ### npx expo start
+
+
+chatServer/gptChat 으로 이동해서 프로젝트 오픈할 때 build.gradle을 선택해서 프로젝트 오픈
