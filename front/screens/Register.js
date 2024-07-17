@@ -95,7 +95,7 @@ const Register = ({ navigation }) => {
     // Display error if something went wrong
     useEffect(() => {
         if (error) {
-            Alert.alert('An error occured', error)
+            Alert.alert('오류가 발생했습니다!', error)
         }
     }, [error])
 
@@ -126,14 +126,14 @@ const Register = ({ navigation }) => {
                             marginVertical: 8,
                         }}
                     >
-                        Welcome Back!
+                        어서오세요!
                     </Text>
 
                     <Input
                         onInputChanged={inputChangedHandler}
                         errorText={formState.inputValidities['fullName']}
                         id="fullName"
-                        placeholder="Enter your full name"
+                        placeholder="이름 입력"
                         placeholderTextColor={colors.text}
                     />
 
@@ -141,7 +141,7 @@ const Register = ({ navigation }) => {
                         onInputChanged={inputChangedHandler}
                         errorText={formState.inputValidities['email']}
                         id="email"
-                        placeholder="Enter your email"
+                        placeholder="이메일 입력"
                         placeholderTextColor={colors.text}
                     />
 
@@ -149,13 +149,13 @@ const Register = ({ navigation }) => {
                         onInputChanged={inputChangedHandler}
                         errorText={formState.inputValidities['password']}
                         id="password"
-                        placeholder="Enter your password"
+                        placeholder="비밀번호 입력"
                         placeholderTextColor={colors.text}
                         secureTextEntry
                     />
 
                     <Button
-                        title="Register"
+                        title="회원가입"
                         onPress={authHandler}
                         isLoading={isLoading}
                         filled

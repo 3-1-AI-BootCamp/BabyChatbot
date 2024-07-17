@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, TextInput, Image } from 'react-native'
+import { View, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, SIZES, images } from '../constants'
@@ -7,7 +7,6 @@ import { MaterialIcons, FontAwesome, Ionicons } from '@expo/vector-icons'
 import { Bubble, GiftedChat } from 'react-native-gifted-chat'
 import { useTheme } from '../themes/ThemeProvider'
 
-// Thanks for watching...
 const Chat = ({ navigation }) => {
     const [inputMessage, setInputMessage] = useState('')
     const [outputMessage, setOutputMessage] = useState(
@@ -16,7 +15,7 @@ const Chat = ({ navigation }) => {
     const [isTyping, setIsTyping] = useState(false)
 
     const [messages, setMessages] = useState([])
-    const {colors } = useTheme()
+    const { colors } = useTheme()
 
     const renderMessage = (props) => {
         const { currentMessage } = props
@@ -37,6 +36,7 @@ const Chat = ({ navigation }) => {
                                 backgroundColor: COLORS.primary,
                                 marginRight: 12,
                                 marginVertical: 12,
+                                borderRadius: 20,
                             },
                         }}
                         textStyle={{
@@ -54,10 +54,11 @@ const Chat = ({ navigation }) => {
                         flex: 1,
                         flexDirection: 'row',
                         justifyContent: 'flex-start',
+                        alignItems: 'flex-end',
                     }}
                 >
                     <Image
-                        source={images.avatar}
+                        source={images.robot}
                         style={{
                             height: 40,
                             width: 40,
@@ -71,6 +72,7 @@ const Chat = ({ navigation }) => {
                             left: {
                                 backgroundColor: COLORS.secondaryWhite,
                                 marginLeft: 12,
+                                borderRadius: 20,
                             },
                         }}
                         textStyle={{
@@ -86,7 +88,6 @@ const Chat = ({ navigation }) => {
         return <Bubble {...props} />
     }
 
-    // Implementing chat generation using gpt-3.5-turbo model
     const generateText = () => {
         setIsTyping(true)
         const message = {
@@ -100,15 +101,11 @@ const Chat = ({ navigation }) => {
             GiftedChat.append(previousMessage, [message])
         )
 
-        /**
-         * Always put your api key in an environment file
-         */
-
         fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer your_own_openai_api_key',
+                Authorization: 'sk-proj-Fh6QkTaK2gTTwfsD5BfIT3BlbkFJc4sY7Qp2UAl1d1HqHNGW',
             },
             body: JSON.stringify({
                 model: 'gpt-3.5-turbo',
@@ -122,6 +119,12 @@ const Chat = ({ navigation }) => {
         })
             .then((response) => response.json())
             .then((data) => {
+                console.log('API Response:', data)
+
+                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+                    throw new Error("Invalid API response")
+                }
+
                 console.log(data.choices[0].message.content)
                 setInputMessage('')
                 setOutputMessage(data.choices[0].message.content.trim())
@@ -138,9 +141,12 @@ const Chat = ({ navigation }) => {
                     GiftedChat.append(previousMessage, [message])
                 )
             })
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setIsTyping(false)
+            })
     }
 
-    // implementing images generations
     const generateImages = () => {
         setIsTyping(true)
         const message = {
@@ -158,7 +164,7 @@ const Chat = ({ navigation }) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer your_own_openai_api_key',
+                Authorization: 'sk-proj-Fh6QkTaK2gTTwfsD5BfIT3BlbkFJc4sY7Qp2UAl1d1HqHNGW',
             },
             body: JSON.stringify({
                 prompt: inputMessage,
@@ -168,6 +174,12 @@ const Chat = ({ navigation }) => {
         })
             .then((response) => response.json())
             .then((data) => {
+                console.log('API Response:', data)
+
+                if (!data.data || !data.data[0] || !data.data[0].url) {
+                    throw new Error("Invalid API response")
+                }
+
                 console.log(data.data[0].url)
                 setInputMessage('')
                 setOutputMessage(data.data[0].url)
@@ -186,6 +198,10 @@ const Chat = ({ navigation }) => {
                         GiftedChat.append(previousMessage, [message])
                     )
                 })
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setIsTyping(false)
             })
     }
 
@@ -209,6 +225,14 @@ const Chat = ({ navigation }) => {
             }}
         >
             <StatusBar style="auto" />
+
+            <View style={StyleSheet.absoluteFillObject}>
+                <Image
+                    source={images.robot}
+                    style={styles.backgroundImage}
+                />
+            </View>
+
             <View
                 style={{
                     height: 60,
@@ -263,7 +287,9 @@ const Chat = ({ navigation }) => {
                 style={{
                     flexDirection: 'row',
                     backgroundColor: colors.background,
-                    paddingVertical: 8,
+                    paddingVertical: 12,
+                    borderTopWidth: 1,
+                    borderTopColor: COLORS.secondaryGray,
                 }}
             >
                 <View
@@ -272,22 +298,23 @@ const Chat = ({ navigation }) => {
                         flexDirection: 'row',
                         marginLeft: 10,
                         backgroundColor: colors.background,
-                        paddingVertical: 8,
+                        paddingVertical: 10,
                         marginHorizontal: 12,
-                        borderRadius: 12,
-                        borderColor: colors.text,
-                        borderWidth: .2
+                        borderRadius: 25,
+                        borderColor: colors.primary,
+                        borderWidth: 1,
                     }}
                 >
                     <TextInput
                         value={inputMessage}
                         onChangeText={handleInputText}
-                        placeholder="Enter your question"
-                        placeholderTextColor={colors.text}
+                        placeholder="질문을 입력하세요"
+                        placeholderTextColor={colors.secondaryGray}
                         style={{
                             color: colors.text,
                             flex: 1,
-                            paddingHorizontal: 10,
+                            paddingHorizontal: 15,
+                            fontSize: 16,
                         }}
                     />
 
@@ -295,14 +322,15 @@ const Chat = ({ navigation }) => {
                         onPress={submitHandler}
                         style={{
                             padding: 6,
-                            borderRadius: 8,
-                            marginHorizontal: 12,
+                            borderRadius: 20,
+                            marginRight: 5,
+                            backgroundColor: colors.primary,
                         }}
                     >
                         <FontAwesome
                             name="send-o"
-                            color={COLORS.primary}
-                            size={24}
+                            color={COLORS.white}
+                            size={20}
                         />
                     </TouchableOpacity>
                 </View>
@@ -310,5 +338,18 @@ const Chat = ({ navigation }) => {
         </SafeAreaView>
     )
 }
+
+const styles = StyleSheet.create({
+    backgroundImage: {
+        width: 200,
+        height: 200,
+        resizeMode: 'contain',
+        opacity: 0.2,
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: [{ translateX: -100 }, { translateY: -100 }],
+    },
+})
 
 export default Chat

@@ -11,7 +11,7 @@ export const validateString = (id, value) => {
         constraints.format = {
             pattern: '.+',
             flags: 'i',
-            message: "Value can't be blank",
+            message: "공백을 사용하실 수 없습니다",
         }
     }
 
@@ -44,7 +44,7 @@ export const validatePassword = (id, value) => {
     if (value !== '') {
         constraints.length = {
             minimum: 6,
-            message: ' must be at least 6 characters',
+            message: ' 는 6글자 이상으로 입력해주세요',
         }
     }
 

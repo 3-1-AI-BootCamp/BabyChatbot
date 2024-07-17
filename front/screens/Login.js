@@ -73,7 +73,7 @@ const Login = ({ navigation }) => {
     // handle errors
     useEffect(() => {
         if (error) {
-            Alert.alert('An error occurred', error)
+            Alert.alert('오류가 발생했습니다!', error)
         }
     }, [error])
 
@@ -104,14 +104,14 @@ const Login = ({ navigation }) => {
                             marginVertical: 8,
                         }}
                     >
-                        Login to your account
+                         로그인 페이지
                     </Text>
 
                     <Input
                         onInputChanged={inputChangedHandler}
                         errorText={formState.inputValidities['email']}
                         id="email"
-                        placeholder="Enter your email"
+                        placeholder="이메일 입력"
                         placeholderTextColor={colors.text}
                     />
 
@@ -119,13 +119,13 @@ const Login = ({ navigation }) => {
                         onInputChanged={inputChangedHandler}
                         errorText={formState.inputValidities['password']}
                         id="password"
-                        placeholder="Enter your password"
+                        placeholder="비밀번호 입력"
                         placeholderTextColor={colors.text}
                         secureTextEntry
                     />
 
                     <Button
-                        title="Login"
+                        title="로그인"
                         filled
                         isLoading={isLoading}
                         onPress={loginHandler}
