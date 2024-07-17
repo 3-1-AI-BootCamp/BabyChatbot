@@ -19,7 +19,7 @@ public class GptChatApplication {
 
     public GptChatApplication() {
         // OpenAI 서비스 초기화
-        this.openAiService = new OpenAiService("sk-proj-gJ55BcQCGAUMCyErffDvT3BlbkFJ3q2UY9h5v0hgBxAde2yk");
+        this.openAiService = new OpenAiService("your api key");
     }
 
     public static void main(String[] args) {
