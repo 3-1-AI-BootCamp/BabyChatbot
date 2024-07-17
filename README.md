@@ -20,4 +20,8 @@
 ### npx expo start
 
 
-chatServer/gptChat 으로 이동해서 프로젝트 오픈할 때 build.gradle을 선택해서 프로젝트 오픈
+#### (백엔드) chatServer/gptChat 으로 이동해서 프로젝트 오픈할 때 build.gradle을 선택해서 프로젝트 오픈
+#### (프론트) front로 이동 후
+npm install
+package.json이 있는 디렉터리에 .env 추가 후 API_KEY='your_api_key' 입력
+npx expo start
