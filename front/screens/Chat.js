@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar'
 import { MaterialIcons, FontAwesome, Ionicons } from '@expo/vector-icons'
 import { Bubble, GiftedChat } from 'react-native-gifted-chat'
 import { useTheme } from '../themes/ThemeProvider'
+import { API_KEY } from '@env';
 
 const Chat = ({ navigation }) => {
     const [inputMessage, setInputMessage] = useState('')
@@ -105,7 +106,7 @@ const Chat = ({ navigation }) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'sk-proj-Fh6QkTaK2gTTwfsD5BfIT3BlbkFJc4sY7Qp2UAl1d1HqHNGW',
+                Authorization: `Bearer ${API_KEY}`,
             },
             body: JSON.stringify({
                 model: 'gpt-3.5-turbo',
@@ -164,7 +165,7 @@ const Chat = ({ navigation }) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'sk-proj-Fh6QkTaK2gTTwfsD5BfIT3BlbkFJc4sY7Qp2UAl1d1HqHNGW',
+                Authorization: `Bearer ${API_KEY}`,
             },
             body: JSON.stringify({
                 prompt: inputMessage,
