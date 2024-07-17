@@ -13,7 +13,7 @@ const Profile = () => {
         }}>
             <Text style={{
                 color: colors.text
-            }}>Profile</Text>
+            }}>프로필 내용들이 들어갈 공간(미구현)</Text>
         </View>
     )
 }

@@ -36,7 +36,7 @@ const Welcome = ({ navigation }) => {
                             marginVertical: 8,
                         }}
                     >
-                        Welcome to ChatGPT
+                        요거보람에 오신 것을 환영합니다
                     </Text>
 
                     <Text
@@ -46,11 +46,11 @@ const Welcome = ({ navigation }) => {
                             marginBottom: 36,
                         }}
                     >
-                        Pick any options to continue
+                        시작하려면 로그인하세요
                     </Text>
 
                     <Button
-                        title="Log in"
+                        title="로그인"
                         filled
                         onPress={() => navigation.navigate('Login')}
                         style={{
@@ -60,7 +60,7 @@ const Welcome = ({ navigation }) => {
                     />
 
                     <Button
-                        title="Register"
+                        title="회원가입"
                         onPress={() => navigation.navigate('Register')}
                         style={{
                             width: SIZES.width - 44,

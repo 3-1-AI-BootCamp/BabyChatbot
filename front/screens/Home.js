@@ -41,7 +41,7 @@ const Home = ({ navigation }) => {
                         },
                     ]}
                 >
-                    Examples
+                    예시 질문
                 </Text>
 
                 <View
@@ -55,7 +55,7 @@ const Home = ({ navigation }) => {
                     ]}
                 >
                     <Text style={[styles.boxText, { color: colors.text }]}>
-                        "Explain quantum computings in simple terms"
+                        "아이가 밥을 잘 안먹으려고 해요"
                     </Text>
                 </View>
                 <View
@@ -69,7 +69,7 @@ const Home = ({ navigation }) => {
                     ]}
                 >
                     <Text style={[styles.boxText, { color: colors.text }]}>
-                        "How To make an HTTP request in JavaScript ?"
+                        "몸에 난 멍이 3일째 없어지지 않아요"
                     </Text>
                 </View>
                 <View
@@ -83,7 +83,7 @@ const Home = ({ navigation }) => {
                     ]}
                 >
                     <Text style={[styles.boxText, { color: colors.text }]}>
-                        "Got any creative ideas for a 10 year old's birthday"
+                        "아이가 걷는 것을 배우고 나서 너무 활발해요"
                     </Text>
                 </View>
 
@@ -92,7 +92,7 @@ const Home = ({ navigation }) => {
                     onPress={() => navigation.navigate('Chat')}
                 >
                     <AntDesign name="plus" size={24} color={COLORS.white} />
-                    <Text style={styles.btnText}>New Chat</Text>
+                    <Text style={styles.btnText}>새 채팅</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

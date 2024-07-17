@@ -13,7 +13,7 @@ const Saved = () => {
         }}>
             <Text style={{
                 color: colors.text,
-            }}>Saved</Text>
+            }}>대화한 내용이 저장될 공간(미구현)</Text>
         </View>
     )
 }
