@@ -8,8 +8,6 @@ import Input from '../components/Input'
 import Button from '../components/Button'
 import { reducer } from '../utils/reducers/formReducers'
 import { validateInput } from '../utils/actions/formActions'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
-import { getFirebaseApp } from '../utils/firebaseHelper'
 import { useTheme } from '../themes/ThemeProvider'
 
 const initialState = {
@@ -39,36 +37,37 @@ const Login = ({ navigation }) => {
     )
 
     const loginHandler = async () => {
-        const app = getFirebaseApp()
-        const auth = getAuth(app)
-        setIsLoading(true)
-
+        setIsLoading(true);
+        setError(null);
+    
         try {
-            const result = await signInWithEmailAndPassword(
-                auth,
-                formState.inputValues.email,
-                formState.inputValues.password
-            )
-
-            if (result) {
-                setIsLoading(false)
-                navigation.navigate('BottomTabNavigation')
+            const response = await fetch('http://localhost:8080/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formState.inputValues.email,
+                    password: formState.inputValues.password,
+                }),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
             }
+    
+            // 로그인 성공
+            console.log('Logged in user:', data);
+            // 여기서 로그인 성공 후의 로직을 구현하세요 (예: 토큰 저장, 사용자 정보 저장 등)
+            navigation.navigate('BottomTabNavigation');
         } catch (error) {
-            const errorCode = error.code
-            let message = 'Something went wrong'
-
-            if (
-                errorCode === 'auth/wrong-password' ||
-                errorCode === 'auth/user-not-found'
-            ) {
-                message = 'Wrong email or password'
-            }
-
-            setError(message)
-            setIsLoading(false)
+            setError(error.message || 'Something went wrong');
+        } finally {
+            setIsLoading(false);
         }
-    }
+    };
 
     // handle errors
     useEffect(() => {
