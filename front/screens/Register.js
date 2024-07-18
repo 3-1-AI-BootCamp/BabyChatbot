@@ -3,26 +3,26 @@ import React, { useCallback, useReducer, useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import { FONTS, SIZES, images } from '../constants'
-import { COLORS } from '../constants'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import { reducer } from '../utils/reducers/formReducers'
 import { validateInput } from '../utils/actions/formActions'
-import { getFirebaseApp } from '../utils/firebaseHelper'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
-import { ref, child, set, getDatabase } from 'firebase/database'
 import { useTheme } from '../themes/ThemeProvider'
 
 const initialState = {
     inputValues: {
-        fullName: '',
         email: '',
         password: '',
+        childName: '',
+        childGender: '',
+        childBirthdate: '',
     },
     inputValidities: {
-        fullName: false,
         email: false,
         password: false,
+        childName: false,
+        childGender: false,
+        childBirthdate: false,
     },
     formIsValid: false,
 }
@@ -41,58 +41,38 @@ const Register = ({ navigation }) => {
         [dispatchFormState]
     )
 
-    const createUser = async (fullName, email, userId) => {
-        const userData = {
-            fullName,
-            email,
-            userId,
-            signUpDate: new Date().toISOString(),
-        }
-
-        const dbRef = ref(getDatabase())
-        const childRef = child(dbRef, `users/${userId}`)
-        await set(childRef, userData)
-
-        return userData
-    }
-
     const authHandler = async () => {
-        const app = getFirebaseApp()
-        const auth = getAuth(app)
-        setIsLoading(true)
-
+        setIsLoading(true);
+    
         try {
-            const result = await createUserWithEmailAndPassword(
-                auth,
-                formState.inputValues.email,
-                formState.inputValues.password
-            )
-
-            const { uid } = result.user
-
-            const userData = await createUser(
-                formState.inputValues.fullName,
-                formState.inputValues.email,
-                uid
-            )
-
-            if (userData) {
-                setIsLoading(false)
-                navigation.navigate('Login')
+            const response = await fetch('http://localhost:8080/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formState.inputValues.email,
+                    password: formState.inputValues.password,
+                    childName: formState.inputValues.childName,
+                    childGender: formState.inputValues.childGender,
+                    childBirthdate: formState.inputValues.childBirthdate,
+                }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                setIsLoading(false);
+                navigation.navigate('Login');
+            } else {
+                throw new Error(data);
             }
         } catch (error) {
-            const errorCode = error.code
-            let message = 'Something went wrong !'
-            if (errorCode === 'auth/email-already-in-use') {
-                message = 'This email is already in use'
-            }
-
-            setError(message)
-            setIsLoading(false)
+            setError(error.message);
+            setIsLoading(false);
         }
-    }
+    };
 
-    // Display error if something went wrong
     useEffect(() => {
         if (error) {
             Alert.alert('오류가 발생했습니다!', error)
@@ -102,40 +82,12 @@ const Register = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
             <PageContainer>
-                <View
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginHorizontal: 22,
-                    }}
-                >
-                    <Image
-                        source={images.logo}
-                        style={{
-                            height: 120,
-                            width: 120,
-                            marginBottom: 22,
-                        }}
-                    />
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: 22 }}>
+                    <Image source={images.logo} style={{ height: 120, width: 120, marginBottom: 22 }} />
 
-                    <Text
-                        style={{
-                            ...FONTS.h4,
-                            color: colors.text,
-                            marginVertical: 8,
-                        }}
-                    >
+                    <Text style={{ ...FONTS.h4, color: colors.text, marginVertical: 8 }}>
                         어서오세요!
                     </Text>
-
-                    <Input
-                        onInputChanged={inputChangedHandler}
-                        errorText={formState.inputValidities['fullName']}
-                        id="fullName"
-                        placeholder="이름 입력"
-                        placeholderTextColor={colors.text}
-                    />
 
                     <Input
                         onInputChanged={inputChangedHandler}
@@ -152,6 +104,30 @@ const Register = ({ navigation }) => {
                         placeholder="비밀번호 입력"
                         placeholderTextColor={colors.text}
                         secureTextEntry
+                    />
+
+                    <Input
+                        onInputChanged={inputChangedHandler}
+                        errorText={formState.inputValidities['childName']}
+                        id="childName"
+                        placeholder="아이의 이름 입력"
+                        placeholderTextColor={colors.text}
+                    />
+
+                    <Input
+                        onInputChanged={inputChangedHandler}
+                        errorText={formState.inputValidities['childGender']}
+                        id="childGender"
+                        placeholder="아이의 성별 입력"
+                        placeholderTextColor={colors.text}
+                    />
+
+                    <Input
+                        onInputChanged={inputChangedHandler}
+                        errorText={formState.inputValidities['childBirthdate']}
+                        id="childBirthdate"
+                        placeholder="아이의 생년월일 입력 (YYYY-MM-DD)"
+                        placeholderTextColor={colors.text}
                     />
 
                     <Button
