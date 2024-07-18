@@ -41,11 +41,11 @@ const Register = ({ navigation }) => {
         [dispatchFormState]
     )
 
-    const authHandler = async () => {
+    authHandler = async () => {
         setIsLoading(true);
     
         try {
-            const response = await fetch('http://localhost:8080/auth/register', {
+            const response = await fetch('http://192.168.47.13:8080/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,19 +59,21 @@ const Register = ({ navigation }) => {
                 }),
             });
     
+            console.log('response:', response);
             const data = await response.json();
     
             if (response.ok) {
                 setIsLoading(false);
                 navigation.navigate('Login');
             } else {
-                throw new Error(data);
+                throw new Error(data.message);
             }
         } catch (error) {
             setError(error.message);
             setIsLoading(false);
         }
     };
+    
 
     useEffect(() => {
         if (error) {
