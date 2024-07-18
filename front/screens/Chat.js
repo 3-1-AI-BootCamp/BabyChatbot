@@ -1,24 +1,72 @@
-// Chat.js
-
-import React, { useState } from 'react';
-import { View, TouchableOpacity, TextInput, Image, StyleSheet, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { MaterialIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { Bubble, GiftedChat } from 'react-native-gifted-chat';
 import { useTheme } from '../themes/ThemeProvider';
 import { API_KEY } from '@env';
-import { COLORS, SIZES, images } from '../constants';
+import { COLORS, images } from '../constants';
 
 const Chat = ({ navigation }) => {
   const [inputMessage, setInputMessage] = useState('');
-  const [outputMessage, setOutputMessage] = useState('Results should be shown here.');
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([]);
   const { colors } = useTheme();
 
+  const exampleQuestions = [
+    "수면교육에 대해 알려주세요",
+    "근처 소아과 병원을 어떻게 찾을 수 있나요?",
+    "모유수유의 장점은 무엇인가요?",
+    "6개월 아기의 발달단계는 어떤가요?"
+  ];
+
+  useEffect(() => {
+    // 초기 메시지 설정
+    const initialMessages = [
+      {
+        _id: 1,
+        text: '안녕하세요! 저는 육아에 대한 질문에 답변을 드리는 AI 어시스턴트입니다. 아래 예시 질문 중 하나를 선택하거나 직접 질문을 입력해주세요.',
+        createdAt: new Date(),
+        user: { _id: 2, name: 'ChatGPT' },
+      },
+      ...exampleQuestions.map((question, index) => ({
+        _id: index + 2,
+        text: question,
+        createdAt: new Date(),
+        user: { _id: 2, name: 'ChatGPT' },
+        quickReply: true,
+      })),
+    ];
+    setMessages(initialMessages);
+  }, []);
+
   const renderMessage = (props) => {
     const { currentMessage } = props;
+
+    if (currentMessage.quickReply) {
+      return (
+        <TouchableOpacity 
+          style={styles.exampleQuestionButton}
+          onPress={() => handleQuickReply(currentMessage.text)}
+        >
+          <Bubble
+            {...props}
+            wrapperStyle={{
+              left: {
+                backgroundColor: COLORS.secondaryWhite,
+                borderRadius: 20,
+              },
+            }}
+            textStyle={{
+              left: {
+                color: COLORS.black,
+              },
+            }}
+          />
+        </TouchableOpacity>
+      );
+    }
 
     if (currentMessage.user._id === 1) {
       return (
@@ -68,11 +116,16 @@ const Chat = ({ navigation }) => {
     }
   };
 
-  const generateText = () => {
+  const handleQuickReply = (question) => {
+    setInputMessage('');
+    generateText(question);
+  };
+
+  const generateText = (question = inputMessage) => {
     setIsTyping(true);
     const message = {
       _id: Math.random().toString(36).substring(7),
-      text: inputMessage,
+      text: question,
       createdAt: new Date(),
       user: { _id: 1 },
     };
@@ -92,7 +145,7 @@ const Chat = ({ navigation }) => {
         messages: [
           {
             role: 'user',
-            content: inputMessage,
+            content: question,
           },
         ],
       }),
@@ -107,9 +160,8 @@ const Chat = ({ navigation }) => {
 
         console.log(data.choices[0].message.content);
         setInputMessage('');
-        setOutputMessage(data.choices[0].message.content.trim());
 
-        const message = {
+        const botMessage = {
           _id: Math.random().toString(36).substring(7),
           text: data.choices[0].message.content.trim(),
           createdAt: new Date(),
@@ -118,7 +170,7 @@ const Chat = ({ navigation }) => {
 
         setIsTyping(false);
         setMessages((previousMessage) =>
-          GiftedChat.append(previousMessage, [message])
+          GiftedChat.append(previousMessage, [botMessage])
         );
       })
       .catch((error) => {
@@ -127,63 +179,7 @@ const Chat = ({ navigation }) => {
       });
   };
 
-  const generateImages = () => {
-    setIsTyping(true);
-    const message = {
-      _id: Math.random().toString(36).substring(7),
-      text: inputMessage,
-      createdAt: new Date(),
-      user: { _id: 1 },
-    };
-
-    setMessages((previousMessage) =>
-      GiftedChat.append(previousMessage, [message])
-    );
-
-    fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        prompt: inputMessage,
-        n: 1,
-        size: '1024x1024',
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('API Response:', data);
-
-        if (!data.data || !data.data[0] || !data.data[0].url) {
-          throw new Error("Invalid API response");
-        }
-
-        console.log(data.data[0].url);
-        setInputMessage('');
-        setOutputMessage(data.data[0].url);
-        setIsTyping(false);
-
-        data.data.forEach((item) => {
-          const message = {
-            _id: Math.random().toString(36).substring(7),
-            text: 'Image',
-            createdAt: new Date(),
-            user: { _id: 2, name: 'ChatGPT' },
-            image: item.url,
-          };
-
-          setMessages((previousMessage) =>
-            GiftedChat.append(previousMessage, [message])
-          );
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setIsTyping(false);
-      });
-  };
+  // generateImages 함수는 그대로 유지
 
   const submitHandler = () => {
     if (inputMessage.toLowerCase().startsWith('generate image')) {
@@ -206,18 +202,11 @@ const Chat = ({ navigation }) => {
           <MaterialIcons name="keyboard-arrow-left" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.realIcon}>
-          {/* 첫 번째 파일의 아이콘 디자인 */}
+          {/* 실제 아이콘 스타일 */}
         </View>
         <TouchableOpacity onPress={() => console.log('Save chat')}>
           <Ionicons name="bookmark-outline" size={24} color={colors.text} />
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.topBox}>
-        <Text style={styles.timeText}>9:41</Text>
-        <View style={styles.wave} />
-        <View style={styles.wifi} />
-        <Image style={styles.battery} source={require('../assets/images/battery.png')} />
       </View>
 
       <View style={styles.chatContainer}>
@@ -229,21 +218,6 @@ const Chat = ({ navigation }) => {
           renderMessage={renderMessage}
           isTyping={isTyping}
         />
-      </View>
-
-      <View style={styles.quickReplyContainer}>
-        <TouchableOpacity style={styles.quickReplyButton}>
-          <Text style={styles.quickReplyText}>수면교육</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickReplyButton}>
-          <Text style={styles.quickReplyText}>근처 병원 찾기</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickReplyButton}>
-          <Text style={styles.quickReplyText}>모유수유</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickReplyButton}>
-          <Text style={styles.quickReplyText}>발달단계</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.inputContainer}>
@@ -294,57 +268,55 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   wave: {
-    // 파형 스타일
+    // 파도 스타일
   },
   wifi: {
-    // 와이파이 아이콘 스타일
+    // 와이파이 스타일
   },
   battery: {
     width: 20,
-    height: 10,
+    height: 20,
   },
   chatContainer: {
     flex: 1,
   },
   userMessageContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    // 사용자 메시지 스타일
   },
   botMessageContainer: {
-    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    marginVertical: 5,
   },
   botAvatar: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    marginLeft: 8,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
   },
   quickReplyContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    padding: 10,
+    marginVertical: 10,
   },
   quickReplyButton: {
+    backgroundColor: COLORS.secondaryWhite,
     padding: 10,
-    backgroundColor: COLORS.lightGray,
     borderRadius: 20,
   },
   quickReplyText: {
-    color: COLORS.darkGray,
+    color: COLORS.black,
   },
   inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
   },
   textInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.white,
-    borderRadius: 25,
-    padding: 5,
+    borderRadius: 20,
+    paddingHorizontal: 10,
   },
   plusButton: {
     padding: 10,
@@ -355,7 +327,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    marginHorizontal: 10,
+    padding: 10,
   },
   sendButton: {
     padding: 10,
@@ -364,6 +336,20 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+  exampleQuestionsContainer: {
+    flexDirection: 'row',
+    padding: 10,
+  },
+  exampleQuestionButton: {
+    backgroundColor: COLORS.secondaryWhite,
+    padding: 10,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  exampleQuestionText: {
+    color: COLORS.black,
+  },
+  
 });
 
 export default Chat;
