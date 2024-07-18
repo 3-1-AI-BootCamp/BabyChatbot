@@ -8,18 +8,21 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
+@Service
 @RestController
 @SpringBootApplication
 public class GptChatApplication {
 
     private final OpenAiService openAiService;
 
-    public GptChatApplication() {
-        // OpenAI 서비스 초기화
-        this.openAiService = new OpenAiService("your api key");
+    public GptChatApplication(@Value("${openai.api.key}") String apiKey) {
+        this.openAiService = new OpenAiService(apiKey);
     }
 
     public static void main(String[] args) {
@@ -32,14 +35,14 @@ public class GptChatApplication {
         // ChatCompletionRequest 생성
         ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
                 .model("gpt-3.5-turbo")
-                .messages(Arrays.asList(new ChatMessage("user", prompt)))
+                .messages(List.of(new ChatMessage("user", prompt)))
                 .maxTokens(100)
                 .temperature(0.7)
                 .build();
 
         // API 호출 및 응답 처리
         ChatCompletionResult chatCompletionResult = openAiService.createChatCompletion(chatCompletionRequest);
-        String response = chatCompletionResult.getChoices().get(0).getMessage().getContent();
+        String response = chatCompletionResult.getChoices().getFirst().getMessage().getContent();
 
         // 응답 반환
         return ResponseEntity.ok(response);
