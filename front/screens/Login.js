@@ -41,7 +41,7 @@ const Login = ({ navigation }) => {
         setError(null);
     
         try {
-            const response = await fetch('http://192.168.47.13:8080/auth/login', {
+            const response = await fetch('http://192.168.0.3:8080/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

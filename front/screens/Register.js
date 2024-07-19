@@ -45,7 +45,7 @@ const Register = ({ navigation }) => {
         setIsLoading(true);
     
         try {
-            const response = await fetch('http://192.168.47.13:8080/auth/register', {
+            const response = await fetch('http://192.168.0.3:8080/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
