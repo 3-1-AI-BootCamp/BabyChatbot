@@ -8,6 +8,7 @@ import Button from '../components/Button'
 import { reducer } from '../utils/reducers/formReducers'
 import { validateInput } from '../utils/actions/formActions'
 import { useTheme } from '../themes/ThemeProvider'
+import { host, port } from '@env';
 
 const initialState = {
     inputValues: {
@@ -45,7 +46,7 @@ const Register = ({ navigation }) => {
         setIsLoading(true);
     
         try {
-            const response = await fetch('http://192.168.0.3:8080/auth/register', {
+            const response = await fetch(`http://${host}:${port}/api/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

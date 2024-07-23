@@ -28,7 +28,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/mongoTest/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/vectorSearch/**", "/mongoTest/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());

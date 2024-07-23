@@ -45,6 +45,21 @@ dependencies {
 
 	// Security용
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// DJL Core API
+	implementation 'ai.djl:api:0.29.0'
+
+	// DJL PyTorch Engine
+	implementation 'ai.djl.pytorch:pytorch-engine:0.29.0'
+
+	// DJL Hugging Face Tokenizers
+	implementation 'ai.djl.huggingface:tokenizers:0.29.0'
+
+	// DJL Basic Dataset (for Translate)
+	implementation 'ai.djl:basicdataset:0.29.0'
+
+	// DJL PyTorch Model Zoo (for Sentence Transformers)
+	implementation 'ai.djl.pytorch:pytorch-model-zoo:0.29.0'
 }
 
 tasks.named('test') {
