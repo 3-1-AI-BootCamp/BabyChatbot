@@ -94,6 +94,13 @@ const Home = ({ navigation }) => {
                     <AntDesign name="plus" size={24} color={COLORS.white} />
                     <Text style={styles.btnText}>새 채팅</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.btn}
+                    onPress={() => navigation.navigate('VectorChat')}
+                >
+                    <AntDesign name="plus" size={24} color={COLORS.white} />
+                    <Text style={styles.btnText}>테스트용 벡터 채팅</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     )
