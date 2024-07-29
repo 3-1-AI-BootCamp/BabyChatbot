@@ -37,37 +37,42 @@ const Login = ({ navigation }) => {
         [dispatchFormState]
     )
 
-    const loginHandler = async () => {
-        setIsLoading(true);
-        setError(null);
+    // const loginHandler = async () => {
+    //     setIsLoading(true);
+    //     setError(null);
     
-        try {
-            const response = await fetch(`http://${host}:${port}/api/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: formState.inputValues.email,
-                    password: formState.inputValues.password,
-                }),
-            });
+    //     try {
+    //         const response = await fetch(`http://${host}:${port}/api/auth/login`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 email: formState.inputValues.email,
+    //                 password: formState.inputValues.password,
+    //             }),
+    //         });
     
-            const data = await response.json();
+    //         const data = await response.json();
     
-            if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
-            }
+    //         if (!response.ok) {
+    //             throw new Error(data.message || 'Login failed');
+    //         }
     
-            // 로그인 성공
-            console.log('Logged in user:', data);
-            // 여기서 로그인 성공 후의 로직을 구현하세요 (예: 토큰 저장, 사용자 정보 저장 등)
-            navigation.navigate('BottomTabNavigation');
-        } catch (error) {
-            setError(error.message || 'Something went wrong');
-        } finally {
-            setIsLoading(false);
-        }
+    //         // 로그인 성공
+    //         console.log('Logged in user:', data);
+    //         // 여기서 로그인 성공 후의 로직을 구현하세요 (예: 토큰 저장, 사용자 정보 저장 등)
+    //         navigation.navigate('BottomTabNavigation');
+    //     } catch (error) {
+    //         setError(error.message || 'Something went wrong');
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
+
+    const loginHandler = () => {
+        // 로그인 검증 과정을 건너뛰고 바로 다음 화면으로 이동
+        navigation.navigate('BottomTabNavigation');
     };
 
     // handle errors
