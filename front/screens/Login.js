@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   slogan: {
-    fontSize: fp(3),
+    fontSize: fp(5),
     textAlign: 'center',
     color: '#000000',
     marginTop: hp(1),
