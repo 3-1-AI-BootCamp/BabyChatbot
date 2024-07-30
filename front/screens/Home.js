@@ -1,151 +1,191 @@
-import * as React from "react";
-import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
-import { Image } from "expo-image";
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons, AntDesign } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, Text, View, Image, Pressable, Dimensions, SafeAreaView } from 'react-native';
 import { useTheme } from '../themes/ThemeProvider';
-import { COLORS } from '../constants';
+
+const { width, height } = Dimensions.get('window');
+
+const wp = (percentage) => (width * percentage) / 100;
+const hp = (percentage) => (height * percentage) / 100;
+const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
 const Home = ({ navigation }) => {
-  const { dark, colors, setScheme } = useTheme();
-
-  const ToggleTheme = () => {
-    dark ? setScheme('light') : setScheme('dark');
-  };
+  const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.topBox}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBarButton}>
-          <Image source={require("../assets/images/back.png")} style={styles.icon} />
-        </TouchableOpacity>
-        <View style={styles.babyLogo}>
-          <Image source={require("../assets/images/icon.jpg")} style={styles.icon1} />
+    <SafeAreaView style={styles.main}>
+      <View style={styles.backdesignContainer}>
+        <Image
+          style={styles.backdesignIcon}
+          source={require('../assets/images/backDesign.png')}
+        />
+        <View style={styles.iconContainer}>
+          <Pressable onPress={() => navigation.goBack()} style={styles.iconWrapper}>
+            <Image
+              style={styles.icon}
+              source={require("../assets/images/back.png")}
+            />
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate('Settings')} style={styles.iconWrapper}>
+            <Image
+              style={styles.icon}
+              source={require("../assets/images/gear.png")}
+            />
+          </Pressable>
         </View>
-        <TouchableOpacity onPress={ToggleTheme} style={styles.topBarButton}>
-          <Ionicons name={dark ? 'sunny-outline' : 'partly-sunny-sharp'} size={32} color={dark ? COLORS.white : COLORS.black} />
-        </TouchableOpacity>
       </View>
 
-      <View style={styles.center}>
-        <Text style={styles.babyChat}>
-          <Text style={styles.babyText}>BABY</Text>
-          <Text style={styles.chatText}> CHAT</Text>
-        </Text>
+      <View style={styles.centerIconContainer}>
+        <Image
+          style={styles.centerIcon}
+          source={require("../assets/images/icon.jpg")}
+        />
+      </View>
 
-        <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('HospitalMapScreen')}>
-          <Text style={styles.boxText}>근처 병원 찾기</Text>
-        </TouchableOpacity>
+      <View style={styles.content}>
+        <View style={styles.textContainer}>
+          <Text style={styles.babyChat}>
+            <Text style={styles.babyText}>BABY</Text>
+            <Text style={styles.chatText}>CHAT</Text>
+          </Text>
+        </View>
 
-        <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Fun')}>
-          <Text style={styles.boxText}>오늘의 무당님</Text>
-        </TouchableOpacity>
+        <Pressable style={styles.wrapper} onPress={() => navigation.navigate('HospitalMapScreen')}>
+          <Text style={styles.text}>근처 병원 찾기</Text>
+        </Pressable>
+        <Pressable style={styles.wrapper} onPress={() => navigation.navigate('Fun')}>
+          <Text style={styles.text}>오늘의 무당님</Text>
+        </Pressable>
+      </View>
 
-        <TouchableOpacity style={styles.historyContainer} onPress={() => navigation.navigate('History')}>
-          <Text style={styles.historyText}>History</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('Chat')}>
-          <Text style={styles.btnText}>Start Chat</Text>
-        </TouchableOpacity>
+      <View style={styles.bottomSection}>
+        <View style={styles.startChatContainer}>
+          <Pressable style={styles.startChatButton} onPress={() => navigation.navigate('Chat')}>
+            <Text style={styles.startChatText}>Start Chat</Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  main: {
     flex: 1,
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "#F0F8FF",
   },
-  topBox: {
+  backdesignContainer: {
+    height: hp(30),
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  backdesignIcon: {
+    position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
-    height: 100,
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 10,
-    backgroundColor: '#d3ebff',
-    alignItems: 'center',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  iconContainer: {
+    position: 'absolute',
+    top: hp(5),
+    left: wp(4),
+    right: wp(4),
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  topBarButton: {
-    height: 50,
-    width: 50,
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  iconWrapper: {
+    marginHorizontal: wp(4), // 좌우 여백 조정
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: wp(7),
+    height: wp(7),
   },
-  babyLogo: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  icon1: {
-    width: 40,
-    height: 40,
-  },
-  center: {
-    flex: 1,
-    alignItems: 'center',
+  centerIconContainer: {
     justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -hp(20), // 위치 조정
+  },
+  centerIcon: {
+    width: wp(20),
+    height: wp(20),
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textContainer: {
+    alignItems: 'center',
+    marginBottom: hp(3),
   },
   babyChat: {
-    fontSize: 55,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 40,
+    fontSize: fp(7),
+    fontWeight: 'bold',
+    marginBottom: hp(2),
   },
   babyText: {
     color: '#0487E2',
   },
   chatText: {
-    color: '#000',
+    color: '#000000',
   },
-  box: {
-    width: 300,
-    height: 65,
-    borderRadius: 35,
-    padding: 10,
+  wrapper: {
+    height: hp(7),
+    width: wp(84),
+    borderRadius: wp(5),
+    padding: wp(2),
     justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#B0D6F5',
     alignItems: 'center',
-    backgroundColor: "#ADD8E6",
-    marginVertical: 10,
+    marginVertical: hp(1.5),
   },
-  boxText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
+  text: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#ffffff',
+    fontSize: fp(4),
+    marginBottom: hp(1),
   },
-  historyContainer: {
-    backgroundColor: "#d3ebff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginTop: 20,
+  bottomSection: {
+    width: wp(100),
+    alignItems: 'center',
   },
-  historyText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000',
-  },
-  btn: {
+  bottomButton: {
+    borderTopLeftRadius: wp(5),
+    borderTopRightRadius: wp(5),
+    width: wp(25),
+    height: hp(6),
+    backgroundColor: '#B0C4DE',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  startChatContainer: {
+    borderTopLeftRadius: wp(10),
+    borderTopRightRadius: wp(10),
+    backgroundColor: '#ffffff',
+    height: hp(23),
+    width: wp(100),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: hp(4),
+    paddingBottom: hp(3),
+  },
+  startChatButton: {
     backgroundColor: '#0487E2',
-    width: 300,
-    height: 65,
-    borderRadius: 35,
-    marginTop: 20,
+    width: wp(84),
+    borderRadius: wp(5),
+    height: hp(5),
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: hp(10),
   },
-  btnText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#fff',
+  startChatText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: fp(2.5),
   },
 });
 
