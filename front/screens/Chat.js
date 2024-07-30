@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { FontAwesome } from '@expo/vector-icons';
 import { Bubble, GiftedChat } from 'react-native-gifted-chat';
 import { useTheme } from '../themes/ThemeProvider';
 import { COLORS, images } from '../constants';
 import { API_KEY } from '@env';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Chat = ({ navigation }) => {
   const [inputMessage, setInputMessage] = useState('');
@@ -14,9 +15,48 @@ const Chat = ({ navigation }) => {
   const [messages, setMessages] = useState([]);
   const { colors } = useTheme();
 
+  const exampleQuestions = [
+    "수면교육에 대해 알려주세요",
+    "근처 소아과 병원을 어떻게 찾을 수 있나요?",
+    "모유수유의 장점은 무엇인가요?",
+    "6개월 아기의 발달단계는 어떤가요?"
+  ];
+
+  useEffect(() => {
+    const initialMessages = [
+      {
+        _id: 1,
+        text: '안녕하세요! 저는 육아에 대한 질문에 답변을 드리는 AI 어시스턴트입니다. 아래 예시 질문 중 하나를 선택하거나 직접 질문을 입력해주세요.',
+        createdAt: new Date(),
+        user: { _id: 2, name: 'ChatGPT' },
+      },
+      ...exampleQuestions.map((question, index) => ({
+        _id: index + 2,
+        text: question,
+        createdAt: new Date(),
+        user: { _id: 2, name: 'ChatGPT' },
+        quickReply: true,
+      })),
+    ];
+    setMessages(initialMessages);
+  }, []);
+
   const renderMessage = (props) => {
     const { currentMessage } = props;
-
+  
+    if (currentMessage.quickReply) {
+      return (
+        <View style={styles.exampleQuestionContainer}>
+          <TouchableOpacity 
+            style={styles.exampleQuestionButton}
+            onPress={() => handleQuickReply(currentMessage.text)}
+          >
+            <Text style={styles.exampleQuestionText}>{currentMessage.text}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+  
     if (currentMessage.user._id === 1) {
       return (
         <View style={styles.rightMessage}>
@@ -24,14 +64,14 @@ const Chat = ({ navigation }) => {
             {...props}
             wrapperStyle={{
               right: {
-                backgroundColor: '#AEDFF7', // 말풍선 배경 색상
+                backgroundColor: COLORS.primary,
                 borderRadius: 20,
                 padding: 8,
               },
             }}
             textStyle={{
               right: {
-                color: '#000000', // 텍스트 색상
+                color: COLORS.white,
                 fontSize: 16,
               },
             }}
@@ -46,14 +86,14 @@ const Chat = ({ navigation }) => {
             {...props}
             wrapperStyle={{
               left: {
-                backgroundColor: '#ADD8E6', // 말풍선 배경 색상
+                backgroundColor: '#ADD8E6',
                 borderRadius: 20,
                 padding: 8,
               },
             }}
             textStyle={{
               left: {
-                color: '#000000', // 텍스트 색상
+                color: '#000000',
                 fontSize: 16,
               },
             }}
@@ -62,13 +102,18 @@ const Chat = ({ navigation }) => {
       );
     }
   };
+  
+  const handleQuickReply = (question) => {
+    setInputMessage('');
+    generateText(question);
+  };
 
-  const generateText = () => {
+  const generateText = (question = inputMessage) => {
     setIsTyping(true);
     const message = {
       _id: Math.random().toString(36).substring(7),
-      text: inputMessage,
-      createAt: new Date(),
+      text: question,
+      createdAt: new Date(),
       user: { _id: 1 },
     };
 
@@ -85,7 +130,7 @@ const Chat = ({ navigation }) => {
         messages: [
           {
             role: 'user',
-            content: inputMessage,
+            content: question,
           },
         ],
       }),
@@ -99,15 +144,15 @@ const Chat = ({ navigation }) => {
         setInputMessage('');
         setOutputMessage(data.choices[0].message.content.trim());
 
-        const message = {
+        const botMessage = {
           _id: Math.random().toString(36).substring(7),
           text: data.choices[0].message.content.trim(),
-          createAt: new Date(),
+          createdAt: new Date(),
           user: { _id: 2, name: 'ChatGPT' },
         };
 
         setIsTyping(false);
-        setMessages((previousMessage) => GiftedChat.append(previousMessage, [message]));
+        setMessages((previousMessage) => GiftedChat.append(previousMessage, [botMessage]));
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -179,63 +224,61 @@ const Chat = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.chatContainer}>
-      <StatusBar style="auto" />
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <StatusBar style="auto" />
 
-      <View style={styles.topBox}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBarButton}>
-          <Image source={require("../assets/images/back.png")} style={styles.icon} />
-        </TouchableOpacity>
-        <View style={styles.babyLogo}>
-          <Image source={require("../assets/images/icon.jpg")} style={styles.icon1} />
-        </View>
-        <TouchableOpacity onPress={() => console.log('Save chat')} style={styles.topBarButton}>
-          <Image source={require("../assets/images/list.png")} style={styles.icon} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.chatContent}>
-        <GiftedChat
-          messages={messages}
-          renderInputToolbar={() => {}}
-          user={{ _id: 1 }}
-          minInputToolbarHeight={0}
-          renderMessage={renderMessage}
-          isTyping={isTyping}
-        />
-      </View>
-
-      <View style={styles.inputBar}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            value={inputMessage}
-            onChangeText={handleInputText}
-            placeholder="질문을 입력하세요"
-            placeholderTextColor={colors.secondaryGray}
-            style={styles.input}
-          />
-          <TouchableOpacity onPress={submitHandler} style={styles.sendButton}>
-            <FontAwesome name="send-o" color={COLORS.white} size={20} />
+        <View style={styles.topBox}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBarButton}>
+            <Image source={require("../assets/images/back.png")} style={styles.icon} />
+          </TouchableOpacity>
+          <View style={styles.babyLogo}>
+            <Image source={require("../assets/images/icon.jpg")} style={styles.icon1} />
+          </View>
+          <TouchableOpacity onPress={() => console.log('Save chat')} style={styles.topBarButton}>
+            <Image source={require("../assets/images/list.png")} style={styles.icon} />
           </TouchableOpacity>
         </View>
-      </View>
-    </SafeAreaView>
+
+        <View style={styles.chatContent}>
+          <GiftedChat
+            messages={messages}
+            renderInputToolbar={() => {}}
+            user={{ _id: 1 }}
+            minInputToolbarHeight={0}
+            renderMessage={renderMessage}
+            isTyping={isTyping}
+          />
+        </View>
+
+        <View style={styles.inputBar}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              value={inputMessage}
+              onChangeText={handleInputText}
+              placeholder="질문을 입력하세요"
+              placeholderTextColor={colors.secondaryGray}
+              style={styles.input}
+            />
+            <TouchableOpacity onPress={submitHandler} style={styles.sendButton}>
+              <FontAwesome name="send-o" color={COLORS.white} size={20} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  chatContainer: {
+  container: {
     flex: 1,
     backgroundColor: '#f0f8ff',
   },
   topBox: {
-    top: 0,
-    left: 0,
     width: '100%',
-    height: 100,
+    height: 60,
     paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 10,
     backgroundColor: '#d3ebff',
     alignItems: 'center',
     flexDirection: 'row',
@@ -261,8 +304,7 @@ const styles = StyleSheet.create({
   },
   chatContent: {
     flex: 1,
-    justifyContent: 'center',
-    marginTop: -20, // Adjust this value to move the chat up
+    paddingTop: 10,
   },
   rightMessage: {
     flex: 1,
@@ -313,6 +355,29 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 5,
     backgroundColor: '#0487e2',
+  },
+  exampleQuestionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginVertical: 5,
+    marginRight: 10,
+  },
+  exampleQuestionButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    padding: 10,
+    maxWidth: '80%',
+  },
+  exampleQuestionText: {
+    color: COLORS.white,
+    fontSize: 16,
+  },
+  rightMessage: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 10,
+    marginRight: 10,
   },
 });
 

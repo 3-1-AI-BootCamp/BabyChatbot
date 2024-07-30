@@ -1,143 +1,152 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { COLORS, FONTS, SIZES } from '../constants'
-import { Ionicons, AntDesign } from '@expo/vector-icons'
-import { useTheme } from '../themes/ThemeProvider'
+import * as React from "react";
+import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
+import { useTheme } from '../themes/ThemeProvider';
+import { COLORS } from '../constants';
 
 const Home = ({ navigation }) => {
+  const { dark, colors, setScheme } = useTheme();
 
-    const { dark, colors, setScheme } = useTheme();
+  const ToggleTheme = () => {
+    dark ? setScheme('light') : setScheme('dark');
+  };
 
-    const ToggleTheme = ()=>{
-        dark ? setScheme('light') : setScheme('dark')
-    }
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topBox}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBarButton}>
+          <Image source={require("../assets/images/back.png")} style={styles.icon} />
+        </TouchableOpacity>
+        <View style={styles.babyLogo}>
+          <Image source={require("../assets/images/icon.jpg")} style={styles.icon1} />
+        </View>
+        <TouchableOpacity onPress={ToggleTheme} style={styles.topBarButton}>
+          <Ionicons name={dark ? 'sunny-outline' : 'partly-sunny-sharp'} size={32} color={dark ? COLORS.white : COLORS.black} />
+        </TouchableOpacity>
+      </View>
 
-    return (
-        <SafeAreaView
-            style={[
-                styles.areaStyle,
-                {
-                    backgroundColor: colors.background,
-                },
-            ]}
-        >
-            <View style={styles.center}>
-                <TouchableOpacity
-                 onPress={ToggleTheme}
-                >
-                    <Ionicons
-                        name={ dark ? 'sunny-outline': "partly-sunny-sharp"}
-                        size={32}
-                        color={dark ? COLORS.white: COLORS.black}
-                    />
-                </TouchableOpacity>
+      <View style={styles.center}>
+        <Text style={styles.babyChat}>
+          <Text style={styles.babyText}>BABY</Text>
+          <Text style={styles.chatText}> CHAT</Text>
+        </Text>
 
-                <Text
-                    style={[
-                        styles.subTitle,
-                        {
-                            color: colors.text,
-                        },
-                    ]}
-                >
-                    예시 질문
-                </Text>
+        <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('HospitalMapScreen')}>
+          <Text style={styles.boxText}>근처 병원 찾기</Text>
+        </TouchableOpacity>
 
-                <View
-                    style={[
-                        styles.box,
-                        {
-                            backgroundColor: colors.background,
-                            borderColor: colors.text,
-                            borderWidth: 1,
-                        },
-                    ]}
-                >
-                    <Text style={[styles.boxText, { color: colors.text }]}>
-                        "아이가 밥을 잘 안먹으려고 해요"
-                    </Text>
-                </View>
-                <View
-                    style={[
-                        styles.box,
-                        {
-                            backgroundColor: colors.background,
-                            borderColor: colors.text,
-                            borderWidth: 1,
-                        },
-                    ]}
-                >
-                    <Text style={[styles.boxText, { color: colors.text }]}>
-                        "몸에 난 멍이 3일째 없어지지 않아요"
-                    </Text>
-                </View>
-                <View
-                    style={[
-                        styles.box,
-                        {
-                            backgroundColor: colors.background,
-                            borderColor: colors.text,
-                            borderWidth: 1,
-                        },
-                    ]}
-                >
-                    <Text style={[styles.boxText, { color: colors.text }]}>
-                        "아이가 걷는 것을 배우고 나서 너무 활발해요"
-                    </Text>
-                </View>
+        <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Fun')}>
+          <Text style={styles.boxText}>오늘의 무당님</Text>
+        </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.btn}
-                    onPress={() => navigation.navigate('Chat')}
-                >
-                    <AntDesign name="plus" size={24} color={COLORS.white} />
-                    <Text style={styles.btnText}>새 채팅</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
-    )
-}
+        <TouchableOpacity style={styles.historyContainer} onPress={() => navigation.navigate('History')}>
+          <Text style={styles.historyText}>History</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('Chat')}>
+          <Text style={styles.btnText}>Start Chat</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-    areaStyle: {
-        flex: 1,
-    },
-    center: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    subTitle: {
-        ...FONTS.h4,
-        marginVertical: 22,
-    },
-    box: {
-        width: 300,
-        paddingVertical: 18,
-        marginVertical: 8,
-        paddingHorizontal: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    boxText: {
-        ...FONTS.body4,
-        textAlign: 'center',
-        color: COLORS.white,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: "#f0f8ff",
+  },
+  topBox: {
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: 100,
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 10,
+    backgroundColor: '#d3ebff',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  topBarButton: {
+    height: 50,
+    width: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    width: 24,
+    height: 24,
+  },
+  babyLogo: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  icon1: {
+    width: 40,
+    height: 40,
+  },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  babyChat: {
+    fontSize: 55,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 40,
+  },
+  babyText: {
+    color: '#0487E2',
+  },
+  chatText: {
+    color: '#000',
+  },
+  box: {
+    width: 300,
+    height: 65,
+    borderRadius: 35,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: "#ADD8E6",
+    marginVertical: 10,
+  },
+  boxText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+  },
+  historyContainer: {
+    backgroundColor: "#d3ebff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  historyText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#000',
+  },
+  btn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0487E2',
+    width: 300,
+    height: 65,
+    borderRadius: 35,
+    marginTop: 20,
+  },
+  btnText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+  },
+});
 
-    btn: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        backgroundColor: COLORS.primary,
-        width: 300,
-        paddingVertical: SIZES.padding * 2,
-    },
-    btnText: {
-        ...FONTS.body3,
-        color: COLORS.white,
-        marginLeft: 8,
-    },
-})
-export default Home
+export default Home;
