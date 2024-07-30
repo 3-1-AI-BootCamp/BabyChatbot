@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
-import { Image } from "expo-image";
+import { Text, StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
 import { useTheme } from '../themes/ThemeProvider';

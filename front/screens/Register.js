@@ -1,130 +1,81 @@
 import React, { useCallback, useReducer, useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Alert,
-  TextInput,
-  TouchableOpacity,
-  Dimensions
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View, Image, Alert, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { reducer } from '../utils/reducers/formReducers';
 import { validateInput } from '../utils/actions/formActions';
-import { getFirebaseApp } from '../utils/firebaseHelper';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, child, set, getDatabase } from 'firebase/database';
 import { useTheme } from '../themes/ThemeProvider';
+import { host, port } from '@env';
 
 const { width, height } = Dimensions.get('window');
 
 const wp = (percentage) => (width * percentage) / 100;
 const hp = (percentage) => (height * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
-import { View, Text, Image, Alert } from 'react-native'
-import React, { useCallback, useReducer, useState, useEffect } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import PageContainer from '../components/PageContainer'
-import { FONTS, SIZES, images } from '../constants'
-import Input from '../components/Input'
-import Button from '../components/Button'
-import { reducer } from '../utils/reducers/formReducers'
-import { validateInput } from '../utils/actions/formActions'
-import { useTheme } from '../themes/ThemeProvider'
-import { host, port } from '@env';
 
 const initialState = {
     inputValues: {
         email: '',
         password: '',
-        kidName: '',
-        birthYear: '',
-        birthMonth: '',
-        birthDay: '',
-        gender: '',
+        childName: '',
+        childBirthdate: '',
+        childGender: '',
     },
     inputValidities: {
         email: false,
         password: false,
-        kidName: false,
-        birthYear: false,
-        birthMonth: false,
-        birthDay: false,
-        gender: false,
+        childName: false,
+        childBirthdate: false,
+        childGender: false,
     },
     formIsValid: false,
 };
 
 const Register = ({ navigation }) => {
-    const [formState, dispatchFormState] = useReducer(reducer, initialState);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const { colors } = useTheme();
+    const [formState, dispatchFormState] = useReducer(reducer, initialState)
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState(null)
+    const { colors } = useTheme()
 
     const inputChangedHandler = useCallback(
         (inputId, inputValue) => {
-            const result = validateInput(inputId, inputValue);
-            dispatchFormState({ inputId, validationResult: result, inputValue });
+            const result = validateInput(inputId, inputValue)
+            dispatchFormState({ inputId, validationResult: result, inputValue })
         },
         [dispatchFormState]
-    );
+    )
 
-    const createUser = async (email, userId) => {
-        const userData = {
-            email,
-            userId,
-            kidName: formState.inputValues.kidName,
-            birthYear: formState.inputValues.birthYear,
-            birthMonth: formState.inputValues.birthMonth,
-            birthDay: formState.inputValues.birthDay,
-            gender: formState.inputValues.gender,
-            signUpDate: new Date().toISOString(),
-        };
-
-        const dbRef = ref(getDatabase());
-        const childRef = child(dbRef, `users/${userId}`);
-        await set(childRef, userData);
-
-        return userData;
-    };
-
-    const authHandler = async () => {
-        const app = getFirebaseApp();
-        const auth = getAuth(app);
+    authHandler = async () => {
         setIsLoading(true);
-
+    
         try {
-            const result = await createUserWithEmailAndPassword(
-                auth,
-                formState.inputValues.email,
-                formState.inputValues.password
-            );
-
-            const { uid } = result.user;
-
-            const userData = await createUser(
-                formState.inputValues.email,
-                uid
-            );
-
-            if (userData) {
+            const response = await fetch(`http://${host}:${port}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formState.inputValues.email,
+                    password: formState.inputValues.password,
+                    childName: formState.inputValues.childName,
+                    childGender: formState.inputValues.childGender,
+                    childBirthdate: formState.inputValues.childBirthdate,
+                }),
+            });
+    
+            console.log('response:', response);
+            const data = await response.json();
+    
+            if (response.ok) {
                 setIsLoading(false);
                 navigation.navigate('Login');
+            } else {
+                throw new Error(data.message);
             }
         } catch (error) {
-            const errorCode = error.code;
-            let message = 'Something went wrong!';
-            if (errorCode === 'auth/email-already-in-use') {
-                message = 'This email is already in use';
-            }
-
-            setError(message);
+            setError(error.message);
             setIsLoading(false);
         }
     };
 
-    // Display error if something went wrong
     useEffect(() => {
         if (error) {
             Alert.alert('오류가 발생했습니다!', error);

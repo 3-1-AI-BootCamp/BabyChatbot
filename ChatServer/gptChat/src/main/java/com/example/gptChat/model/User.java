@@ -16,8 +16,8 @@ public class User {
 
     private String password;
     private String childName;
-    private String childGender;
     private String childBirthdate;
+    private String childGender;
     private String signUpDate;
 
     // getters and setters

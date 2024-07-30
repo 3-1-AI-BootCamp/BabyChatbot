@@ -1,36 +1,15 @@
 import React, { useCallback, useReducer, useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Dimensions,
-  SafeAreaView,
-  TextInput,
-  TouchableOpacity,
-  Alert
-} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { reducer } from '../utils/reducers/formReducers';
 import { validateInput } from '../utils/actions/formActions';
 import { useTheme } from '../themes/ThemeProvider';
+import { host, port } from '@env';
 
 const { width, height } = Dimensions.get('window');
 
 const wp = (percentage) => (width * percentage) / 100;
 const hp = (percentage) => (height * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
-import { View, Text, Image, Alert } from 'react-native'
-import React, { useCallback, useReducer, useState, useEffect } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import PageContainer from '../components/PageContainer'
-import { FONTS, SIZES, images } from '../constants'
-import { COLORS } from '../constants'
-import Input from '../components/Input'
-import Button from '../components/Button'
-import { reducer } from '../utils/reducers/formReducers'
-import { validateInput } from '../utils/actions/formActions'
-import { useTheme } from '../themes/ThemeProvider'
-import { host, port } from '@env';
 
 const initialState = {
   inputValues: {
