@@ -2,7 +2,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native'
 import React from 'react'
 import { COLORS, SIZES } from '../constants'
 import { useTheme } from '../themes/ThemeProvider'
-
+import { FontFamily } from '../constants/Globalstyles'
 const Input = (props) => {
     const { colors, dark } = useTheme();
 
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     input: {
         color: COLORS.black,
         flex: 1,
-        fontFamily: 'regular',
+        FontFamily: 'regular',
         paddingTop: 0,
     },
     errorContainer: {
