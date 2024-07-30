@@ -42,8 +42,13 @@ const Welcome = ({ navigation }) => {
             style={styles.button}
           />
           <Button
-            title="점프 채팅"
-            onPress={() => navigation.navigate('Chat')}
+            title="점프 홈"
+            onPress={() => navigation.navigate('Home')}
+            style={styles.button}
+          />
+          <Button
+            title="점프 탭네비"
+            onPress={() => navigation.navigate('BottomTabNavigation')}
             style={styles.button}
           />
         </View>

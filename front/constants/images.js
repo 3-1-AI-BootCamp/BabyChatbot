@@ -7,6 +7,7 @@ const backDesign = require('../assets/images/backDesign.png')
 const Vector = require('../assets/images/Vector.png')
 const lock_ = require('../assets/images/lock_.png')
 const people = require('../assets/images/people.png')
+const gear = require('../assets/images/gear.png')
 
 export default {
     logo,
@@ -18,6 +19,7 @@ export default {
     Vector,
     lock_,
     people,
+    gear
 }
 
 // source={images.

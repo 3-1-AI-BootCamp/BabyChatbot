@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserLocation } from '../utils/locationUtils';
 import { searchNearbyHospitals, generateGPTResponse } from '../utils/apiUtils';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { exampleQuestions } from '../constants';
 
-const useChat = () => {
+const useChat = (navigation) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -33,6 +34,23 @@ const useChat = () => {
     }
     initializeLocation();
   }, []);
+
+  const saveChatHistory = async () => {
+    try {
+      const chatHistory = JSON.stringify(messages);
+      const timestamp = new Date().toISOString();
+      const key = `chat_${timestamp}`;
+      await AsyncStorage.setItem(key, chatHistory);
+      console.log('Chat history saved successfully with key:', key);
+    } catch (error) {
+      console.error('Error saving chat history:', error);
+    }
+  };
+
+  const endChat = () => {
+    saveChatHistory();
+    navigation.goBack();
+  };
 
   const initializeLocation = async () => {
     const location = await getUserLocation();
@@ -67,7 +85,6 @@ const useChat = () => {
           user: { _id: 2, name: 'ChatGPT' },
         };
       } else if (tags.includes('병원')) {
-        // Medical info response
         const hispitalInfo = await generateGPTResponse(`병원에 관한 얘기를 해주세요: ${question}`);
         botMessage = {
           _id: Math.random().toString(36).substring(7),
@@ -76,7 +93,6 @@ const useChat = () => {
           user: { _id: 2, name: 'ChatGPT' },
         };
       } else if (tags.includes('의학 정보')) {
-        // Medical info response
         const medicalInfo = await generateGPTResponse(`의학 정보에 대해 설명해주세요: ${question}`);
         botMessage = {
           _id: Math.random().toString(36).substring(7),
@@ -85,7 +101,6 @@ const useChat = () => {
           user: { _id: 2, name: 'ChatGPT' },
         };
       } else if (tags.includes('아이 태몽')) {
-        // Saju response
         const TaemongInfo = await generateGPTResponse(`아이 태몽에 대해 설명해주세요: ${question}`);
         botMessage = {
           _id: Math.random().toString(36).substring(7),
@@ -93,18 +108,15 @@ const useChat = () => {
           createdAt: new Date(),
           user: { _id: 2, name: 'ChatGPT' },
         };
-      }
-        else if (tags.includes('아이 사주')) {
-          // Saju response
-          const sajuInfo = await generateGPTResponse(`아이 사주에 대해 설명해주세요: ${question}`);
-          botMessage = {
-            _id: Math.random().toString(36).substring(7),
-            text: sajuInfo,
-            createdAt: new Date(),
-            user: { _id: 2, name: 'ChatGPT' },
-          };
+      } else if (tags.includes('아이 사주')) {
+        const sajuInfo = await generateGPTResponse(`아이 사주에 대해 설명해주세요: ${question}`);
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: sajuInfo,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
       } else if (tags.includes('아이 별자리')) {
-        // Horoscope response
         const horoscopeInfo = await generateGPTResponse(`아이 별자리에 대해 설명해주세요: ${question}`);
         botMessage = {
           _id: Math.random().toString(36).substring(7),
@@ -113,7 +125,6 @@ const useChat = () => {
           user: { _id: 2, name: 'ChatGPT' },
         };
       } else if (tags.includes('부모 고민 상담')) {
-        // Parenting advice response
         const advice = await generateGPTResponse(`해당 고민에 대해 상담해주세요: ${question}`);
         botMessage = {
           _id: Math.random().toString(36).substring(7),
@@ -134,6 +145,7 @@ const useChat = () => {
       setMessages((previousMessage) =>
         GiftedChat.append(previousMessage, [botMessage])
       );
+      saveChatHistory();
     } catch (error) {
       console.error("Error generating response:", error);
       setIsTyping(false);
@@ -155,6 +167,7 @@ const useChat = () => {
     isTyping,
     messages,
     generateText,
+    endChat,
   };
 };
 

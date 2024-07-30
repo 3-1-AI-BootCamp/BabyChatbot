@@ -17,10 +17,12 @@ const Chat = ({ navigation }) => {
     isTyping,
     messages,
     generateText,
-  } = useChat();
+    endChat,
+  } = useChat(navigation);
 
   const handleBackPress = () => {
-    navigation.goBack();
+    endChat();
+    navigation.navigate('Home')
   };
 
   const handleListPress = () => {

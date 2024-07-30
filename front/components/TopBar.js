@@ -19,33 +19,33 @@ const TopBar = ({ onBackPress, onListPress }) => {
 };
 
 const styles = StyleSheet.create({
-    topBox: {
-        width: '100%',
-        height: 60,
-        paddingHorizontal: 20,
-        backgroundColor: '#d3ebff',
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-      },
-    topBarButton: {
-        height: 50,
-        width: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-    icon: {
-        width: 32,
-        height: 24,
-      },
-    babyLogo: {
-        flex: 1,
-        alignItems: 'center',
-      },
-    icon1: {
-        width: 40,
-        height: 40,
-      },
+  topBox: {
+    width: '100%',
+    height: 60,
+    paddingHorizontal: 20,
+    backgroundColor: '#d3ebff',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  topBarButton: {
+    height: 50,
+    width: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    width: 32,
+    height: 24,
+  },
+  babyLogo: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  icon1: {
+    width: 40,
+    height: 40,
+  },
 });
 
 export default TopBar;
