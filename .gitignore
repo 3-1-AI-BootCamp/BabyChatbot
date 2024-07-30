@@ -1,3 +1,5 @@
 node_modules
 .env
+
+# api key 및 mongo url 보호용
 ChatServer/gptChat/src/main/resources/application.properties

@@ -12,6 +12,10 @@ export const COLORS = {
     tertiaryBlack: '#202123',
     gray: 'F8F8F8',
     secondaryGray: '#808080',
+    background: '#F0F8FF',
+    lightGray: '#d3d3d3',
+    darkGray: '#575857'
+
 }
 
 export const SIZES = {

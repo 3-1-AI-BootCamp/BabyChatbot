@@ -1,18 +1,10 @@
 import React, { useCallback, useReducer, useState, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  Image, 
-  Dimensions, 
-  SafeAreaView, 
-  TextInput, 
-  TouchableOpacity, 
-  Alert 
-} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { reducer } from '../utils/reducers/formReducers';
 import { validateInput } from '../utils/actions/formActions';
 import { useTheme } from '../themes/ThemeProvider';
+import { images } from '../constants';
+import { host, port } from '@env';
 
 const { width, height } = Dimensions.get('window');
 
@@ -61,12 +53,12 @@ const Login = ({ navigation }) => {
       <View style={styles.backdesignContainer}>
         <Image
           style={styles.backdesignIcon}
-          source={require("../assets/images/backDesign.png")}
+          source={images.backDesign}
         />
         <View style={styles.iconContainer}>
           <Image
             style={styles.icon}
-            source={require("../assets/images/icon.jpg")}
+            source={images.icon}
           />
         </View>
       </View>
@@ -82,7 +74,7 @@ const Login = ({ navigation }) => {
           <View style={styles.inputWrapper}>
             <Image
               style={styles.inputIcon}
-              source={require("../assets/images/Vector.png")}
+              source={images.Vector}
             />
             <TextInput
               style={styles.input}
@@ -95,7 +87,7 @@ const Login = ({ navigation }) => {
           <View style={styles.inputWrapper}>
             <Image
               style={styles.inputIcon}
-              source={require("../assets/images/lock_.png")}
+              source={images.lock_}
             />
             <TextInput
               style={styles.input}
@@ -107,8 +99,8 @@ const Login = ({ navigation }) => {
             />
           </View>
           <View style={{ marginBottom: hp(3) }} />
-          <TouchableOpacity 
-            style={styles.loginButton} 
+          <TouchableOpacity
+            style={styles.loginButton}
             onPress={loginHandler}
             disabled={!formState.formIsValid || isLoading}
           >
@@ -116,7 +108,7 @@ const Login = ({ navigation }) => {
               {isLoading ? 'Loading...' : 'Login'}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.signupContainer}
             onPress={() => navigation.navigate('Register')}
           >

@@ -1,21 +1,10 @@
 import React, { useCallback, useReducer, useState, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  Image, 
-  Alert, 
-  TextInput, 
-  TouchableOpacity, 
-  Dimensions 
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View, Image, Alert, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { images } from '../constants';
 import { reducer } from '../utils/reducers/formReducers';
 import { validateInput } from '../utils/actions/formActions';
-import { getFirebaseApp } from '../utils/firebaseHelper';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, child, set, getDatabase } from 'firebase/database';
 import { useTheme } from '../themes/ThemeProvider';
+import { host, port } from '@env';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,23 +16,27 @@ const initialState = {
     inputValues: {
         email: '',
         password: '',
-        kidName: '',
+        childName: '',
         birthYear: '',
         birthMonth: '',
         birthDay: '',
-        gender: '',
+        childGender: '',
     },
     inputValidities: {
         email: false,
         password: false,
-        kidName: false,
+        childName: false,
         birthYear: false,
         birthMonth: false,
         birthDay: false,
-        gender: false,
+        childGender: false,
     },
     formIsValid: false,
 };
+
+const years = Array.from({ length: 100 }, (_, i) => ({ label: `${new Date().getFullYear() - i}`, value: `${new Date().getFullYear() - i}` }));
+const months = Array.from({ length: 12 }, (_, i) => ({ label: `${i + 1}`, value: `${i + 1}` }));
+const days = Array.from({ length: 31 }, (_, i) => ({ label: `${i + 1}`, value: `${i + 1}` }));
 
 const Register = ({ navigation }) => {
     const [formState, dispatchFormState] = useReducer(reducer, initialState);
@@ -59,61 +52,40 @@ const Register = ({ navigation }) => {
         [dispatchFormState]
     );
 
-    const createUser = async (email, userId) => {
-        const userData = {
-            email,
-            userId,
-            kidName: formState.inputValues.kidName,
-            birthYear: formState.inputValues.birthYear,
-            birthMonth: formState.inputValues.birthMonth,
-            birthDay: formState.inputValues.birthDay,
-            gender: formState.inputValues.gender,
-            signUpDate: new Date().toISOString(),
-        };
-
-        const dbRef = ref(getDatabase());
-        const childRef = child(dbRef, `users/${userId}`);
-        await set(childRef, userData);
-
-        return userData;
-    };
-
     const authHandler = async () => {
-        const app = getFirebaseApp();
-        const auth = getAuth(app);
         setIsLoading(true);
 
         try {
-            const result = await createUserWithEmailAndPassword(
-                auth,
-                formState.inputValues.email,
-                formState.inputValues.password
-            );
+            const birthdate = `${formState.inputValues.birthYear}-${formState.inputValues.birthMonth.padStart(2, '0')}-${formState.inputValues.birthDay.padStart(2, '0')}`;
 
-            const { uid } = result.user;
+            const response = await fetch(`http://${host}:${port}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formState.inputValues.email,
+                    password: formState.inputValues.password,
+                    childName: formState.inputValues.childName,
+                    childGender: formState.inputValues.childGender,
+                    childBirthdate: birthdate,
+                }),
+            });
 
-            const userData = await createUser(
-                formState.inputValues.email,
-                uid
-            );
+            const data = await response.json();
 
-            if (userData) {
+            if (response.ok) {
                 setIsLoading(false);
                 navigation.navigate('Login');
+            } else {
+                throw new Error(data.message);
             }
         } catch (error) {
-            const errorCode = error.code;
-            let message = 'Something went wrong!';
-            if (errorCode === 'auth/email-already-in-use') {
-                message = 'This email is already in use';
-            }
-
-            setError(message);
+            setError(error.message);
             setIsLoading(false);
         }
     };
 
-    // Display error if something went wrong
     useEffect(() => {
         if (error) {
             Alert.alert('오류가 발생했습니다!', error);
@@ -125,12 +97,12 @@ const Register = ({ navigation }) => {
             <View style={styles.account}>
                 <Image
                     style={styles.backdesignIcon}
-                    source={require("../assets/images/backDesign.png")}
+                    source={images.backDesign}
                 />
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Login')}>
                     <Image
                         style={styles.backIcon}
-                        source={require("../assets/images/back.png")}
+                        source={images.back}
                     />
                 </TouchableOpacity>
                 <Text style={styles.text}>Register</Text>
@@ -139,7 +111,7 @@ const Register = ({ navigation }) => {
                         <View style={[styles.email, styles.emailBorder]}>
                             <Image
                                 style={styles.vectorIcon}
-                                source={require("../assets/images/Vector.png")}
+                                source={images.Vector}
                             />
                             <TextInput
                                 style={[styles.email1, styles.email1Typo]}
@@ -152,7 +124,7 @@ const Register = ({ navigation }) => {
                         <View style={[styles.password, styles.birthSpaceBlock]}>
                             <Image
                                 style={styles.iconLockLocked}
-                                source={require("../assets/images/lock_.png")}
+                                source={images.lock_}
                             />
                             <TextInput
                                 style={[styles.email1, styles.email1Typo]}
@@ -167,13 +139,13 @@ const Register = ({ navigation }) => {
                             <View style={styles.peopleParentFlexBox}>
                                 <Image
                                     style={styles.peopleIcon}
-                                    source={require("../assets/images/people.png")}
+                                    source={images.people}
                                 />
                                 <TextInput
                                     style={[styles.kidsName1, styles.email1Typo]}
                                     placeholder="Kid’s name"
                                     placeholderTextColor="#888888"
-                                    onChangeText={inputChangedHandler.bind(this, 'kidName')}
+                                    onChangeText={inputChangedHandler.bind(this, 'childName')}
                                     value={formState.inputValues.kidName}
                                 />
                             </View>
@@ -220,27 +192,27 @@ const Register = ({ navigation }) => {
                             <View style={[styles.frameGroup, styles.frameFlexBox]}>
                                 <TouchableOpacity
                                     style={[styles.wrapperLayout, formState.inputValues.gender === 'Boy' && styles.genderSelected]}
-                                    onPress={() => inputChangedHandler('gender', 'Boy')}
+                                    onPress={() => inputChangedHandler('childGender', 'Boy')}
                                 >
                                     <Text style={[styles.boy, styles.boyTypo]}>Boy</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.girlWrapper, styles.wrapperLayout, formState.inputValues.gender === 'Girl' && styles.genderSelected]}
-                                    onPress={() => inputChangedHandler('gender', 'Girl')}
+                                    onPress={() => inputChangedHandler('childGender', 'Girl')}
                                 >
                                     <Text style={[styles.girl, styles.boyTypo]}>Girl</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <TouchableOpacity 
-                            style={[styles.signInBotton, styles.goingLoginFlexBox]} 
+                        <TouchableOpacity
+                            style={[styles.signInBotton, styles.goingLoginFlexBox]}
                             onPress={authHandler}
                             disabled={!formState.formIsValid || isLoading}
                         >
                             <Text style={styles.signIn}>{isLoading ? 'Loading...' : 'Sign in'}</Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.signupContainer} // 스타일 변경
                         onPress={() => navigation.navigate('Login')}
                     >
@@ -409,7 +381,7 @@ const styles = StyleSheet.create({
         alignSelf: "stretch",
         marginTop: hp(1), // 공간 확보를 위해 margin 추가
     },
-    
+
     yearWrapper: {
         width: wp(22),
         borderRadius: wp(2),

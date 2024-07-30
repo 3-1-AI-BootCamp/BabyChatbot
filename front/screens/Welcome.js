@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from "../themes/ThemeProvider";
 import { FontFamily } from "../constants/Globalstyles";
-import { COLORS, FONTS, SIZES } from '../constants';
+import { COLORS, FONTS, SIZES, images } from '../constants';
 import PageContainer from '../components/PageContainer';
 import Button from '../components/Button';
 
@@ -20,7 +20,7 @@ const Welcome = ({ navigation }) => {
             <Image
               style={styles.icon}
               contentFit="cover"
-              source={require("../assets/images/icon.jpg")}
+              source={images.icon}
             />
             <Text style={styles.babyChat}>
               <Text style={styles.babyChatTxtContainer}>
@@ -39,6 +39,11 @@ const Welcome = ({ navigation }) => {
           <Button
             title="회원가입"
             onPress={() => navigation.navigate('Register')}
+            style={styles.button}
+          />
+          <Button
+            title="점프 채팅"
+            onPress={() => navigation.navigate('Chat')}
             style={styles.button}
           />
         </View>
