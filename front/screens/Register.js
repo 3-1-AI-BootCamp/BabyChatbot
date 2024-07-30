@@ -17,37 +17,47 @@ const initialState = {
         email: '',
         password: '',
         childName: '',
-        childBirthdate: '',
+        birthYear: '',
+        birthMonth: '',
+        birthDay: '',
         childGender: '',
     },
     inputValidities: {
         email: false,
         password: false,
         childName: false,
-        childBirthdate: false,
+        birthYear: false,
+        birthMonth: false,
+        birthDay: false,
         childGender: false,
     },
     formIsValid: false,
 };
 
+const years = Array.from({ length: 100 }, (_, i) => ({ label: `${new Date().getFullYear() - i}`, value: `${new Date().getFullYear() - i}` }));
+const months = Array.from({ length: 12 }, (_, i) => ({ label: `${i + 1}`, value: `${i + 1}` }));
+const days = Array.from({ length: 31 }, (_, i) => ({ label: `${i + 1}`, value: `${i + 1}` }));
+
 const Register = ({ navigation }) => {
-    const [formState, dispatchFormState] = useReducer(reducer, initialState)
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState(null)
-    const { colors } = useTheme()
+    const [formState, dispatchFormState] = useReducer(reducer, initialState);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const { colors } = useTheme();
 
     const inputChangedHandler = useCallback(
         (inputId, inputValue) => {
-            const result = validateInput(inputId, inputValue)
-            dispatchFormState({ inputId, validationResult: result, inputValue })
+            const result = validateInput(inputId, inputValue);
+            dispatchFormState({ inputId, validationResult: result, inputValue });
         },
         [dispatchFormState]
-    )
+    );
 
-    authHandler = async () => {
+    const authHandler = async () => {
         setIsLoading(true);
-    
+
         try {
+            const birthdate = `${formState.inputValues.birthYear}-${formState.inputValues.birthMonth.padStart(2, '0')}-${formState.inputValues.birthDay.padStart(2, '0')}`;
+
             const response = await fetch(`http://${host}:${port}/api/auth/register`, {
                 method: 'POST',
                 headers: {
@@ -58,13 +68,12 @@ const Register = ({ navigation }) => {
                     password: formState.inputValues.password,
                     childName: formState.inputValues.childName,
                     childGender: formState.inputValues.childGender,
-                    childBirthdate: formState.inputValues.childBirthdate,
+                    childBirthdate: birthdate,
                 }),
             });
-    
-            console.log('response:', response);
+
             const data = await response.json();
-    
+
             if (response.ok) {
                 setIsLoading(false);
                 navigation.navigate('Login');
@@ -136,7 +145,7 @@ const Register = ({ navigation }) => {
                                     style={[styles.kidsName1, styles.email1Typo]}
                                     placeholder="Kid’s name"
                                     placeholderTextColor="#888888"
-                                    onChangeText={inputChangedHandler.bind(this, 'kidName')}
+                                    onChangeText={inputChangedHandler.bind(this, 'childName')}
                                     value={formState.inputValues.kidName}
                                 />
                             </View>
@@ -183,13 +192,13 @@ const Register = ({ navigation }) => {
                             <View style={[styles.frameGroup, styles.frameFlexBox]}>
                                 <TouchableOpacity
                                     style={[styles.wrapperLayout, formState.inputValues.gender === 'Boy' && styles.genderSelected]}
-                                    onPress={() => inputChangedHandler('gender', 'Boy')}
+                                    onPress={() => inputChangedHandler('childGender', 'Boy')}
                                 >
                                     <Text style={[styles.boy, styles.boyTypo]}>Boy</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.girlWrapper, styles.wrapperLayout, formState.inputValues.gender === 'Girl' && styles.genderSelected]}
-                                    onPress={() => inputChangedHandler('gender', 'Girl')}
+                                    onPress={() => inputChangedHandler('childGender', 'Girl')}
                                 >
                                     <Text style={[styles.girl, styles.boyTypo]}>Girl</Text>
                                 </TouchableOpacity>

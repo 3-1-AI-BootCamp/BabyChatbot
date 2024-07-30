@@ -39,11 +39,6 @@ const useChat = () => {
     setUserLocation(location);
   };
 
-  const isHospitalRelatedQuery = (query) => {
-    const keywords = ['병원', '의원', '클리닉', '응급실', '소아과', '내과', '외과'];
-    return keywords.some(keyword => query.includes(keyword));
-  };
-
   const generateText = async (question = inputMessage) => {
     setIsTyping(true);
     const message = {
@@ -58,19 +53,82 @@ const useChat = () => {
     );
 
     try {
-      let response;
-      if (isHospitalRelatedQuery(question)) {
-        response = await searchNearbyHospitals(userLocation);
-      } else {
-        response = await generateGPTResponse(question);
-      }
+      const response = await generateGPTResponse(question, true);
+      console.log('Response:', response);
+      const { text, tags } = response;
 
-      const botMessage = {
-        _id: Math.random().toString(36).substring(7),
-        text: response,
-        createdAt: new Date(),
-        user: { _id: 2, name: 'ChatGPT' },
-      };
+      let botMessage;
+      if (tags.includes('병원 위치')) {
+        const hospitalLocationInfo = await searchNearbyHospitals(userLocation);
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: hospitalLocationInfo,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
+      } else if (tags.includes('병원')) {
+        // Medical info response
+        const hispitalInfo = await generateGPTResponse(`병원에 관한 얘기를 해주세요: ${question}`);
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: hispitalInfo,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
+      } else if (tags.includes('의학 정보')) {
+        // Medical info response
+        const medicalInfo = await generateGPTResponse(`의학 정보에 대해 설명해주세요: ${question}`);
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: medicalInfo,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
+      } else if (tags.includes('아이 태몽')) {
+        // Saju response
+        const TaemongInfo = await generateGPTResponse(`아이 태몽에 대해 설명해주세요: ${question}`);
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: TaemongInfo,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
+      }
+        else if (tags.includes('아이 사주')) {
+          // Saju response
+          const sajuInfo = await generateGPTResponse(`아이 사주에 대해 설명해주세요: ${question}`);
+          botMessage = {
+            _id: Math.random().toString(36).substring(7),
+            text: sajuInfo,
+            createdAt: new Date(),
+            user: { _id: 2, name: 'ChatGPT' },
+          };
+      } else if (tags.includes('아이 별자리')) {
+        // Horoscope response
+        const horoscopeInfo = await generateGPTResponse(`아이 별자리에 대해 설명해주세요: ${question}`);
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: horoscopeInfo,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
+      } else if (tags.includes('부모 고민 상담')) {
+        // Parenting advice response
+        const advice = await generateGPTResponse(`해당 고민에 대해 상담해주세요: ${question}`);
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: advice,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
+      } else {
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: text,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
+      }
 
       setIsTyping(false);
       setMessages((previousMessage) =>
