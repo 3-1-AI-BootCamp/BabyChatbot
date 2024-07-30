@@ -3,7 +3,7 @@ import { Text, StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
 import { useTheme } from '../themes/ThemeProvider';
-import { COLORS } from '../constants';
+import { COLORS, images } from '../constants';
 
 const Home = ({ navigation }) => {
   const { dark, colors, setScheme } = useTheme();
@@ -16,10 +16,10 @@ const Home = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.topBox}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBarButton}>
-          <Image source={require("../assets/images/back.png")} style={styles.icon} />
+          <Image source={images.back} style={styles.icon} />
         </TouchableOpacity>
         <View style={styles.babyLogo}>
-          <Image source={require("../assets/images/icon.jpg")} style={styles.icon1} />
+          <Image source={images.icon} style={styles.icon1} />
         </View>
         <TouchableOpacity onPress={ToggleTheme} style={styles.topBarButton}>
           <Ionicons name={dark ? 'sunny-outline' : 'partly-sunny-sharp'} size={32} color={dark ? COLORS.white : COLORS.black} />

@@ -1,5 +1,6 @@
 import React, { useCallback, useReducer, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, Alert, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { images } from '../constants';
 import { reducer } from '../utils/reducers/formReducers';
 import { validateInput } from '../utils/actions/formActions';
 import { useTheme } from '../themes/ThemeProvider';
@@ -87,12 +88,12 @@ const Register = ({ navigation }) => {
             <View style={styles.account}>
                 <Image
                     style={styles.backdesignIcon}
-                    source={require("../assets/images/backDesign.png")}
+                    source={images.backDesign}
                 />
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Login')}>
                     <Image
                         style={styles.backIcon}
-                        source={require("../assets/images/back.png")}
+                        source={images.back}
                     />
                 </TouchableOpacity>
                 <Text style={styles.text}>Register</Text>
@@ -101,7 +102,7 @@ const Register = ({ navigation }) => {
                         <View style={[styles.email, styles.emailBorder]}>
                             <Image
                                 style={styles.vectorIcon}
-                                source={require("../assets/images/Vector.png")}
+                                source={images.Vector}
                             />
                             <TextInput
                                 style={[styles.email1, styles.email1Typo]}
@@ -114,7 +115,7 @@ const Register = ({ navigation }) => {
                         <View style={[styles.password, styles.birthSpaceBlock]}>
                             <Image
                                 style={styles.iconLockLocked}
-                                source={require("../assets/images/lock_.png")}
+                                source={images.lock_}
                             />
                             <TextInput
                                 style={[styles.email1, styles.email1Typo]}
@@ -129,7 +130,7 @@ const Register = ({ navigation }) => {
                             <View style={styles.peopleParentFlexBox}>
                                 <Image
                                     style={styles.peopleIcon}
-                                    source={require("../assets/images/people.png")}
+                                    source={images.people}
                                 />
                                 <TextInput
                                     style={[styles.kidsName1, styles.email1Typo]}
