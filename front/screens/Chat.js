@@ -5,13 +5,15 @@ import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { Bubble, GiftedChat } from 'react-native-gifted-chat';
 import { useTheme } from '../themes/ThemeProvider';
-import { API_KEY } from '@env';
+import { API_KEY, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '@env';
 import { COLORS, images } from '../constants';
+import * as Location from 'expo-location';
 
 const Chat = ({ navigation }) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
   const { colors } = useTheme();
 
   const exampleQuestions = [
@@ -39,6 +41,7 @@ const Chat = ({ navigation }) => {
       })),
     ];
     setMessages(initialMessages);
+    getUserLocation();
   }, []);
 
   const renderMessage = (props) => {
@@ -121,7 +124,53 @@ const Chat = ({ navigation }) => {
     generateText(question);
   };
 
-  const generateText = (question = inputMessage) => {
+  const getUserLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Permission to access location was denied');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    setUserLocation(location.coords);
+  };
+
+  const isHospitalRelatedQuery = (query) => {
+    const keywords = ['병원', '의원', '클리닉', '응급실', '소아과', '내과', '외과'];
+    return keywords.some(keyword => query.includes(keyword));
+  };
+
+  const searchNearbyHospitals = async () => {
+    if (!userLocation) {
+      return '위치 정보를 가져올 수 없습니다. 위치 권한을 확인해주세요.';
+    }
+  
+    const { latitude, longitude } = userLocation;
+    const url = `https://openapi.naver.com/v1/search/local.json?query=병원&coordinate=${longitude},${latitude}&radius=2000`;
+  
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'X-Naver-Client-Id': NAVER_CLIENT_ID,
+          'X-Naver-Client-Secret': NAVER_CLIENT_SECRET,
+        },
+      });
+      const data = await response.json();
+      console.log(data);
+      
+      if (data.items && data.items.length > 0) {
+        const hospitals = data.items.slice(0, 3).map(item => `${item.title} (${item.roadAddress})`).join('\n');
+        return `근처에 있는 병원 정보입니다:\n\n${hospitals}`;
+      } else {
+        return '근처에 병원을 찾을 수 없습니다.';
+      }
+    } catch (error) {
+      console.error('Error fetching nearby hospitals:', error);
+      return '병원 정보를 가져오는 중 오류가 발생했습니다.';
+    }
+  };
+
+  const generateText = async (question = inputMessage) => {
     setIsTyping(true);
     const message = {
       _id: Math.random().toString(36).substring(7),
@@ -129,55 +178,89 @@ const Chat = ({ navigation }) => {
       createdAt: new Date(),
       user: { _id: 1 },
     };
-
+  
     setMessages((previousMessage) =>
       GiftedChat.append(previousMessage, [message])
     );
-
-    fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'user',
-            content: question,
-          },
-        ],
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('API Response:', data);
-
-        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-          throw new Error("Invalid API response");
-        }
-
-        console.log(data.choices[0].message.content);
-        setInputMessage('');
-
-        const botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: data.choices[0].message.content.trim(),
-          createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' },
-        };
-
-        setIsTyping(false);
-        setMessages((previousMessage) =>
-          GiftedChat.append(previousMessage, [botMessage])
-        );
+  
+    let response;
+    try {
+      if (isHospitalRelatedQuery(question)) {
+        response = await searchNearbyHospitals();
+      } else {
+        const gptResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'user',
+              content: question,
+            },
+          ],
+        }),
       })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setIsTyping(false);
-      });
-  };
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('API Response:', data);
+  
+          if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            throw new Error("Invalid API response");
+          }
+  
+          console.log(data.choices[0].message.content);
+          setInputMessage('');
+  
+          const botMessage = {
+            _id: Math.random().toString(36).substring(7),
+            text: data.choices[0].message.content.trim(),
+            createdAt: new Date(),
+            user: { _id: 2, name: 'ChatGPT' },
+          };
+  
+          setIsTyping(false);
+          setMessages((previousMessage) =>
+            GiftedChat.append(previousMessage, [botMessage])
+          );
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          setIsTyping(false);
+        });
+        const data = await gptResponse.json();
+      response = data.choices[0].message.content.trim();
+    }
+
+    const botMessage = {
+      _id: Math.random().toString(36).substring(7),
+      text: response,
+      createdAt: new Date(),
+      user: { _id: 2, name: 'ChatGPT' },
+    };
+
+    setIsTyping(false);
+    setMessages((previousMessage) =>
+      GiftedChat.append(previousMessage, [botMessage])
+    );
+  } catch (error) {
+    console.error("Error generating response:", error);
+    setIsTyping(false);
+    // 에러 메시지를 사용자에게 보여줄 수 있습니다.
+    const errorMessage = {
+      _id: Math.random().toString(36).substring(7),
+      text: "죄송합니다. 응답을 생성하는 중 오류가 발생했습니다.",
+      createdAt: new Date(),
+      user: { _id: 2, name: 'ChatGPT' },
+    };
+    setMessages((previousMessage) =>
+      GiftedChat.append(previousMessage, [errorMessage])
+    );
+  }
+};
 
   // generateImages 함수는 그대로 유지
 
