@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, Pressable, Dimensions, SafeAreaView } from 'react-native';
 import { useTheme } from '../themes/ThemeProvider';
+import { images } from '../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -16,19 +17,19 @@ const Home = ({ navigation }) => {
       <View style={styles.backdesignContainer}>
         <Image
           style={styles.backdesignIcon}
-          source={require('../assets/images/backDesign.png')}
+          source={images.backDesign}
         />
         <View style={styles.iconContainer}>
           <Pressable onPress={() => navigation.goBack()} style={styles.iconWrapper}>
             <Image
               style={styles.icon}
-              source={require("../assets/images/back.png")}
+              source={images.back}
             />
           </Pressable>
-          <Pressable onPress={() => navigation.navigate('Settings')} style={styles.iconWrapper}>
+          <Pressable onPress={() => navigation.navigate('Profile')} style={styles.iconWrapper}>
             <Image
               style={styles.icon}
-              source={require("../assets/images/gear.png")}
+              source={images.gear}
             />
           </Pressable>
         </View>
@@ -37,7 +38,7 @@ const Home = ({ navigation }) => {
       <View style={styles.centerIconContainer}>
         <Image
           style={styles.centerIcon}
-          source={require("../assets/images/icon.jpg")}
+          source={images.icon}
         />
       </View>
 

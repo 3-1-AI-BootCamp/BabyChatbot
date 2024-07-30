@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Pressable, TextInput, ScrollView, Dimensions, SafeAreaView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../themes/ThemeProvider';
+import { images } from '../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -73,7 +74,7 @@ const Profile = ({ navigation, route }) => {
                 <View style={styles.backdesignContainer}>
                     <Image
                         style={styles.backdesignIcon}
-                        source={require('../assets/images/backDesign.png')}
+                        source={images.backDesign}
                     />
                 </View>
 
@@ -81,7 +82,7 @@ const Profile = ({ navigation, route }) => {
                     <Pressable onPress={pickImage}>
                         <Image
                             style={styles.profileImage}
-                            source={userInfo.profileImage ? { uri: userInfo.profileImage } : require('../assets/images/icon.png')}
+                            source={userInfo.profileImage ? { uri: userInfo.profileImage } : images.icon}
                         />
                     </Pressable>
                     <Pressable style={styles.editButton} onPress={handleEdit}>
