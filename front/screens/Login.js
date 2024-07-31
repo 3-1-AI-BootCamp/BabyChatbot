@@ -5,6 +5,7 @@ import { validateInput } from '../utils/actions/formActions';
 import { useTheme } from '../themes/ThemeProvider';
 import { images } from '../constants';
 import { host, port } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -38,8 +39,41 @@ const Login = ({ navigation }) => {
     [dispatchFormState]
   );
 
-  const loginHandler = () => {
-    navigation.navigate('BottomTabNavigation');
+  const loginHandler = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`http://${host}:${port}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formState.inputValues.email,
+          password: formState.inputValues.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      // 로그인 성공
+      console.log('Logged in user:', data);
+
+      // 사용자 데이터를 AsyncStorage에 저장
+      await AsyncStorage.setItem('user', JSON.stringify(data));
+
+      // 홈 화면으로 이동
+      navigation.navigate('Home');
+    } catch (error) {
+      setError(error.message || 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {

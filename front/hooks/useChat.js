@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserLocation } from '../utils/locationUtils';
-import { searchNearbyHospitals, generateGPTResponse } from '../utils/apiUtils';
+import { generateGPTResponse, getHospitalLocation, getConsulting, getMedicalInfo, getHospitalInfo, getSaju, getStar, getTaemong, getTag } from '../utils/apiUtils';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { exampleQuestions } from '../constants';
+import { host, port } from '@env';
 
 const useChat = (navigation) => {
   const [inputMessage, setInputMessage] = useState('');
@@ -65,82 +66,41 @@ const useChat = (navigation) => {
       createdAt: new Date(),
       user: { _id: 1 },
     };
-
+  
     setMessages((previousMessage) =>
       GiftedChat.append(previousMessage, [message])
     );
-
+  
     try {
-      const response = await generateGPTResponse(question, true);
-      console.log('Response:', response);
-      const { text, tags } = response;
-
+      const { tags } = await getTag(question, host, port);
       let botMessage;
+      console.log('Tags:', tags);
+  
       if (tags.includes('병원 위치')) {
-        const hospitalLocationInfo = await searchNearbyHospitals(userLocation);
-        botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: hospitalLocationInfo,
-          createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' },
-        };
+        botMessage = await getHospitalLocation(userLocation);
       } else if (tags.includes('병원')) {
-        const hispitalInfo = await generateGPTResponse(`병원에 관한 얘기를 해주세요: ${question}`);
-        botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: hispitalInfo,
-          createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' },
-        };
+        botMessage = await getHospitalInfo(question, host, port);
       } else if (tags.includes('의학 정보')) {
-        const medicalInfo = await generateGPTResponse(`의학 정보에 대해 설명해주세요: ${question}`);
-        botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: medicalInfo,
-          createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' },
-        };
+        botMessage = await getMedicalInfo(question, host, port);
       } else if (tags.includes('아이 태몽')) {
-        const TaemongInfo = await generateGPTResponse(`아이 태몽에 대해 설명해주세요: ${question}`);
-        botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: TaemongInfo,
-          createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' },
-        };
+        botMessage = await getTaemong(question, host, port);
       } else if (tags.includes('아이 사주')) {
-        const sajuInfo = await generateGPTResponse(`아이 사주에 대해 설명해주세요: ${question}`);
-        botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: sajuInfo,
-          createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' },
-        };
+        botMessage = await getSaju(question, host, port);
       } else if (tags.includes('아이 별자리')) {
-        const horoscopeInfo = await generateGPTResponse(`아이 별자리에 대해 설명해주세요: ${question}`);
-        botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: horoscopeInfo,
-          createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' },
-        };
+        botMessage = await getStar(question, host, port);
       } else if (tags.includes('부모 고민 상담')) {
-        const advice = await generateGPTResponse(`해당 고민에 대해 상담해주세요: ${question}`);
+        botMessage = await getConsulting(question, host, port);
+      } else if (tags.includes('엄마들의 답변')) {
+        botMessage = await generateGPTResponse(question);
+      }else {
         botMessage = {
           _id: Math.random().toString(36).substring(7),
-          text: advice,
-          createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' },
-        };
-      } else {
-        botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: text,
+          text: "죄송합니다. 해당 질문에 대한 정보를 찾을 수 없습니다.",
           createdAt: new Date(),
           user: { _id: 2, name: 'ChatGPT' },
         };
       }
-
+  
       setIsTyping(false);
       setMessages((previousMessage) =>
         GiftedChat.append(previousMessage, [botMessage])
