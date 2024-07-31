@@ -26,12 +26,6 @@ const Home = ({ navigation }) => {
               source={images.back}
             />
           </Pressable>
-          <Pressable onPress={() => navigation.navigate('Profile')} style={styles.iconWrapper}>
-            <Image
-              style={styles.icon}
-              source={images.gear}
-            />
-          </Pressable>
         </View>
       </View>
 
@@ -91,13 +85,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: hp(5),
     left: wp(4),
-    right: wp(4),
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   iconWrapper: {
-    marginHorizontal: wp(4), // 좌우 여백 조정
+    marginHorizontal: wp(4),
   },
   icon: {
     width: wp(7),
