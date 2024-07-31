@@ -5,7 +5,8 @@ import { getMedicalInfo } from "./doctor";
 import { getHospitalInfo } from "./hospitalInfo";
 import { getSaju } from "./saju";
 import { getStar } from "./star";
+import { getChinese } from "./chinese";
 import { getTaemong } from "./taemong";
 import { getTag } from "./tag";
 
-export { generateGPTResponse, getHospitalLocation, getConsulting, getMedicalInfo, getHospitalInfo, getSaju, getStar, getTaemong, getTag };
+export { generateGPTResponse, getHospitalLocation, getConsulting, getMedicalInfo, getHospitalInfo, getSaju, getStar, getChinese, getTaemong, getTag };

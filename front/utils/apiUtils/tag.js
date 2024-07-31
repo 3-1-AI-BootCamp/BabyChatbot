@@ -4,7 +4,7 @@ export const getTag = async (question, host, port) => {
             { role: 'user', content: question },
             {
                 role: 'system',
-                content: '다음 문장의 주제를 분류하고, [Tags: 주제] 형식으로 태그를 추가해주세요. 태그는 가장 유사한 것으로 한 가지만 달아야 합니다: 병원 위치, 병원, 의학 정보, 아이 태몽, 아이 사주, 아이 별자리, 오늘의 운세, 부모 고민 상담, 기타'
+                content: '다음 문장의 주제를 분류하고, [Tags: 주제] 형식으로 태그를 추가해주세요. 태그는 가장 유사한 내용으로 다음 중 한 가지만 달아야 합니다: 병원 위치, 병원, 의학 정보, 태몽, 사주, 별자리 운세, 십이지 운세, 부모 고민 상담, 다른 부모들의 답변, 기타'
             }
         ];
         console.log('host, port:', host, port);
