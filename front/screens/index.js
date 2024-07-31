@@ -5,6 +5,7 @@ import Register from './Register'
 import Profile from './Profile'
 import Saved from './Saved'
 import Welcome from './Welcome'
-import VectorChat from './VectorChat'
+import Fun from './Fun'
+import HospitalMapScreen from './HospitalMapScreen'
 
-export { Home, Chat, Login, Register, Profile, Saved, Welcome, VectorChat }
+export { Home, Chat, Login, Register, Profile, Saved, Welcome, Fun, HospitalMapScreen }
