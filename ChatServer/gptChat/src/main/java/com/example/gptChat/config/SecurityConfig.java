@@ -23,11 +23,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // 보안 관련 코드
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // 여기에 작성된 엔드 포인트의 접근만 허용한다
+                        // 예를 들어, /api/test 엔드포인트를 새로 만들면 접근이 허용되지 않음
                         .requestMatchers("/api/auth/**", "/api/vectorSearch/**", "/mongoTest/**").permitAll()
                         .anyRequest().authenticated()
                 )

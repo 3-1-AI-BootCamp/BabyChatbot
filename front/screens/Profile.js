@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, Pressable, TextInput, ScrollView, Dimens
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../themes/ThemeProvider';
 import { images } from '../constants';
+import { host, port } from '@env'; // 환경변수 사용
 
 const { width, height } = Dimensions.get('window');
 
@@ -38,13 +39,36 @@ const Profile = ({ navigation, route }) => {
         setIsEditing(!isEditing);
     };
 
-    const handleSave = () => {
-        // 여기에 저장 로직 추가
-        setIsEditing(false);
+    const handleSave = async () => {
+        try {
+            const response = await fetch(`http://${host}:${port}/api/auth/updateProfile`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: userInfo.email,
+                    kidName: userInfo.kidName,
+                    gender: userInfo.gender,
+                    birthDate: userInfo.birthDate,
+                    profileImage: userInfo.profileImage,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setIsEditing(false);
+                Alert.alert("성공", "프로필이 성공적으로 수정되었습니다.");
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            Alert.alert("오류가 발생했습니다!", error.message);
+        }
     };
 
     const handleLogout = () => {
-        // 로그아웃 로직 추가
         navigation.navigate('Login');
     };
 
@@ -85,7 +109,7 @@ const Profile = ({ navigation, route }) => {
                             source={userInfo.profileImage ? { uri: userInfo.profileImage } : images.icon}
                         />
                     </Pressable>
-                    <Pressable style={styles.editButton} onPress={handleEdit}>
+                    <Pressable style={styles.editButton} onPress={isEditing ? handleSave : handleEdit}>
                         <Text style={styles.editButtonText}>{isEditing ? '저장' : '편집'}</Text>
                     </Pressable>
                 </View>
