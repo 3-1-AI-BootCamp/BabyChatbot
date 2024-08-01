@@ -106,7 +106,7 @@ const Profile = ({ navigation, route }) => {
                     <Pressable onPress={pickImage}>
                         <Image
                             style={styles.profileImage}
-                            source={userInfo.profileImage ? { uri: userInfo.profileImage } : images.icon}
+                            source={userInfo.profileImage ? { uri: userInfo.profileImage } : images.appicon}
                         />
                     </Pressable>
                     <Pressable style={styles.editButton} onPress={isEditing ? handleSave : handleEdit}>
