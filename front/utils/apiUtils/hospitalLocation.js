@@ -1,3 +1,4 @@
+// 근처 병원 위치에 관한 질문이 나왔을 경우 처리
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
 export const getHospitalLocation = async (userLocation) => {
