@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import { FontFamily } from './constants/Globalstyles';
 import AppNavigation from './navigations/AppNavigation';
 import { ThemeProvider } from './themes/ThemeProvider';
 
