@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
 import { useTheme } from '../../themes/ThemeProvider';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import SajuFortune from './sajuFortune';
@@ -48,6 +48,7 @@ const Fun = () => {
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={[styles.header, { backgroundColor: colors.primary }]}>
+            <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('BottomTabNavigation')}>
                     <Image
                         style={styles.headerIcon}
@@ -66,6 +67,7 @@ const Fun = () => {
                         source={images.list}
                     />
                 </TouchableOpacity>
+                <View style={styles.headerButton} />
             </View>
             <View style={[styles.tabContainer, { backgroundColor: colors.primary }]}>
                 <TouchableOpacity style={styles.tabButton} onPress={() => setSelectedTab('zodiacFortune')}>
@@ -95,17 +97,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: wp(4),
-        height: hp(8),
-        backgroundColor: '#add8e6',
+        height: hp(8) + StatusBar.currentHeight,
+        paddingTop: StatusBar.currentHeight,
     },
     headerButton: {
         padding: wp(2),
+        width: wp(3), // 뒤로 가기 버튼의 너비를 고정
     },
     headerIcon: {
         width: wp(6),
         height: wp(6),
     },
     iconContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
