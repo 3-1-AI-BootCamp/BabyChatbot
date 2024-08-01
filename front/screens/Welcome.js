@@ -3,8 +3,7 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from "../themes/ThemeProvider";
-import { FontFamily } from "../constants/Globalstyles";
-import { COLORS, FONTS, SIZES, images } from '../constants';
+import { COLORS, FONTS, SIZES, images, FontFamily } from '../constants';
 import PageContainer from '../components/PageContainer';
 import Button from '../components/Button';
 
@@ -42,11 +41,6 @@ const Welcome = ({ navigation }) => {
             style={styles.button}
           />
           <Button
-            title="점프 홈"
-            onPress={() => navigation.navigate('Home')}
-            style={styles.button}
-          />
-          <Button
             title="점프 탭네비"
             onPress={() => navigation.navigate('BottomTabNavigation')}
             style={styles.button}
@@ -77,7 +71,7 @@ const styles = StyleSheet.create({
   babyChat: {
     fontSize: 45,
     fontWeight: "700",
-    fontFamily: FontFamily.obotoBold,
+    fontFamily: FontFamily.RobotoBold,
     textAlign: "center",
     display: "flex",
     alignItems: "flex-end",

@@ -2,7 +2,6 @@ import { View, Text, TextInput, StyleSheet } from 'react-native'
 import React from 'react'
 import { COLORS, SIZES } from '../constants'
 import { useTheme } from '../themes/ThemeProvider'
-import { FontFamily } from '../constants/Globalstyles'
 const Input = (props) => {
     const { colors, dark } = useTheme();
 
