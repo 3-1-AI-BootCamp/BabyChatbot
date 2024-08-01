@@ -42,6 +42,7 @@ const Register = ({ navigation }) => {
     const [formState, dispatchFormState] = useReducer(reducer, initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedGender, setSelectedGender] = useState(null);
     const { colors } = useTheme();
 
     const inputChangedHandler = useCallback(
@@ -146,7 +147,7 @@ const Register = ({ navigation }) => {
                                     placeholder="Kid’s name"
                                     placeholderTextColor="#888888"
                                     onChangeText={inputChangedHandler.bind(this, 'childName')}
-                                    value={formState.inputValues.kidName}
+                                    value={formState.inputValues.childName}
                                 />
                             </View>
                         </View>
@@ -184,21 +185,32 @@ const Register = ({ navigation }) => {
                             </View>
                         </View>
                         <View style={styles.birthSpaceBlock}>
-                            <View
-                                style={[styles.babysBirthWrapper, styles.peopleParentFlexBox]}
-                            >
+                            <View style={[styles.babysBirthWrapper, styles.peopleParentFlexBox]}>
                                 <Text style={styles.babysBirth}>Baby’s gender</Text>
                             </View>
                             <View style={[styles.frameGroup, styles.frameFlexBox]}>
                                 <TouchableOpacity
-                                    style={[styles.wrapperLayout, formState.inputValues.gender === 'Boy' && styles.genderSelected]}
-                                    onPress={() => inputChangedHandler('childGender', 'Boy')}
+                                    style={[
+                                        styles.wrapperLayout,
+                                        selectedGender === 'Boy' && styles.genderSelectedBoy
+                                    ]}
+                                    onPress={() => {
+                                        setSelectedGender('Boy');
+                                        inputChangedHandler('childGender', 'Boy');
+                                    }}
                                 >
                                     <Text style={[styles.boy, styles.boyTypo]}>Boy</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={[styles.girlWrapper, styles.wrapperLayout, formState.inputValues.gender === 'Girl' && styles.genderSelected]}
-                                    onPress={() => inputChangedHandler('childGender', 'Girl')}
+                                    style={[
+                                        styles.girlWrapper,
+                                        styles.wrapperLayout,
+                                        selectedGender === 'Girl' && styles.genderSelectedGirl
+                                    ]}
+                                    onPress={() => {
+                                        setSelectedGender('Girl');
+                                        inputChangedHandler('childGender', 'Girl');
+                                    }}
                                 >
                                     <Text style={[styles.girl, styles.boyTypo]}>Girl</Text>
                                 </TouchableOpacity>
@@ -235,7 +247,7 @@ const styles = StyleSheet.create({
         borderRadius: wp(3),
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#F5F5F5", // 변경: 입력창 배경색을 Login.js와 일치시킴
+        backgroundColor: "#F5F5F5",
     },
     email1Typo: {
         textAlign: "left",
@@ -291,8 +303,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#F5F5F5", // 변경: 입력창 배경색을 Login.js와 일치시킴
     },
-    genderSelected: {
-        backgroundColor: '#E0F7FA'
+    genderSelectedBoy: {
+        backgroundColor: '#E0F7FA', // 연한 파란색
+    },
+    genderSelectedGirl: {
+        backgroundColor: '#fff5f5', // 연한 핑크색
     },
     goingLoginFlexBox: {
         padding: wp(2),
