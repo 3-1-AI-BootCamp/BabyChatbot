@@ -1,3 +1,4 @@
+// 질문에 대한 태그를 붙이는 함수
 export const getTag = async (question, host, port) => {
     try {
         const messages = [

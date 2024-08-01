@@ -3,3 +3,6 @@ node_modules
 
 # api key 및 mongo url 보호용
 ChatServer/gptChat/src/main/resources/application.properties
+
+# 용량 큰 model 파일 전송 시 오류 방지
+front/filter/*
