@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserLocation } from '../utils/locationUtils';
-import { generateGPTResponse, getHospitalLocation, getConsulting, getMedicalInfo, getHospitalInfo, getSaju, getStar, getTaemong, getTag, getChinese, getOtherParent } from '../utils/apiUtils';
+import { generateGPTResponse, getHospital, getConsulting, getMedicalInfo, getBabyProduct, getSaju, getStar, getTaemong, getTag, getChinese, getOtherParent } from '../utils/apiUtils';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { exampleQuestions, badwords } from '../constants';
 import { host, port } from '@env';
@@ -113,10 +113,10 @@ const useChat = (navigation) => {
         let botMessage;
         console.log('Tags:', tags);
 
-        if (tags.includes('병원 위치')) {
-            botMessage = await getHospitalLocation(userLocation);
-        } else if (tags.includes('병원')) {
-            botMessage = await getHospitalInfo(question, host, port);
+        if (tags.includes('병원')) {
+            botMessage = await getHospital(userLocation, question, host, port);
+        } else if (tags.includes('아기 용품')) {
+            botMessage = await getBabyProduct(question, host, port);
         } else if (tags.includes('의학 정보')) {
             botMessage = await getMedicalInfo(question, host, port);
         } else if (tags.includes('태몽')) {
