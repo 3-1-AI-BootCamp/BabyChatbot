@@ -1,6 +1,5 @@
 node_modules
 .env
-ChatServer/springPinecone/src/resources/application.properties
 
 # api key 및 mongo url 보호용
 ChatServer/gptChat/src/main/resources/application.properties
@@ -13,3 +12,5 @@ front/constants/badwords.js
 
 # 모델 파일 삭제
 pythonServer/questionData/*
+
+ChatServer/springPinecone/src/main/resources/*

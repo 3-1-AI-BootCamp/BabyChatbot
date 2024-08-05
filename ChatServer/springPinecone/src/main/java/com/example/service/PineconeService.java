@@ -24,7 +24,8 @@ public class PineconeService {
     private Index indexOpenai;
     private HuggingfaceEmbedding embedding;
     private OpenAIEmbedding openEmbedding;
-    String namespace = "qa-namespace";
+    //String namespace = "qa-namespace";
+    String namespace = "otherMom";
     String namespaceOpenai = "question-answer";
 
 
@@ -35,7 +36,8 @@ public class PineconeService {
             @org.springframework.beans.factory.annotation.Value("${openai.api.key}") String openaiApiKey
     ) {
         Pinecone pc = new Pinecone.Builder(pineconeApiKey).build();
-        this.index = pc.getIndexConnection("vector384");
+        //this.index = pc.getIndexConnection("vector384");
+        this.index = pc.getIndexConnection("hoyeol");
         this.indexOpenai = pc.getIndexConnection("vector1536");
         this.embedding = new HuggingfaceEmbedding(fastApiUrl);
         this.openEmbedding = new OpenAIEmbedding(openaiApiKey);
