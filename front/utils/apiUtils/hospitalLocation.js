@@ -1,7 +1,7 @@
-// 근처 병원 위치에 관한 질문이 나왔을 경우 처리
+// 병원에 관한 질문이 나왔을 경우 처리
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
-export const getHospitalLocation = async (userLocation) => {
+export const getHospital = async (userLocation, question, host, port) => {
   if (!userLocation) {
     return {
       _id: Math.random().toString(36).substring(7),
