@@ -28,7 +28,7 @@ const Chat = ({ navigation, route }) => {
 
   const handleBackPress = () => {
     endChat();
-    navigation.navigate('Home')
+    navigation.navigate('BottomTabNavigation')
   };
 
   const handleListPress = () => {
