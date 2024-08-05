@@ -34,6 +34,7 @@ public class AuthController {
         }
     }
 
+
     // 로그인 컨트롤러로 요청이 들어오면 그 값을 userService에 보냄
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {

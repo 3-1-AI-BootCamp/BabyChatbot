@@ -24,6 +24,7 @@ public class LLMService {
     }
 
 
+//    gpt-3.5-turbo 로 메세지 생성
     public ResponseEntity<String> generateResponse(@RequestBody String prompt) {
         // ChatCompletionRequest 생성
         ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()

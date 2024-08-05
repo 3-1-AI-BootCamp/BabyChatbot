@@ -30,11 +30,24 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // 여기에 작성된 엔드 포인트의 접근만 허용한다
-                        // 예를 들어, /api/test 엔드포인트를 새로 만들면 접근이 허용되지 않음
-                        .requestMatchers(
-                                "/api/auth/**", "/api/vectorSearch/**", "/mongoTest/**",
-                                "/api/pinecone/**", "/api/llm/**"
-                        ).permitAll()
+                        // authenticated(인증된 사용자만 접근 가능), hasRole(특정 역할을 가진 사용자만 접근 가능)
+//                        api get 요청(간단한 체크)
+                        .requestMatchers("/ajs/**").permitAll()
+
+//                        api post 요청(백터db 관련)
+                        .requestMatchers( "/api/vectorSearch/**", "/api/pinecone/**").permitAll()
+
+//                        로그인
+                        .requestMatchers("/api/auth/**").permitAll()
+
+//                        api post 요청(LLM 관련)
+                        .requestMatchers("/api/llm/**").permitAll()
+
+//                        grafana, prometheus
+                        .requestMatchers("/actuator/**").permitAll()
+
+//                        api post 요청(테스트 관련)
+                        .requestMatchers("/mongoTest/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());
