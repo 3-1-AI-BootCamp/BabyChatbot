@@ -9,3 +9,6 @@ front/filter/*
 
 # 비속어 필터 함수 삭제
 front/constants/badwords.js
+
+# 모델 파일 삭제
+pythonServer/questionData/*
