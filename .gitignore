@@ -1,5 +1,6 @@
 node_modules
 .env
+ChatServer/springPinecone/src/resources/application.properties
 
 # api key 및 mongo url 보호용
 ChatServer/gptChat/src/main/resources/application.properties

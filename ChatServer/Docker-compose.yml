@@ -1,0 +1,26 @@
+services:
+  spring-boot-app:
+    container_name: spring-server
+    build:
+      context: ./springPinecone
+      dockerfile: Dockerfile
+    image: spring-img
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  fastapi-app:
+    container_name: fastapi-server
+    build:
+      context: ./FastApiEmbedding
+      dockerfile: Dockerfile
+    image: fastapi-img
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
