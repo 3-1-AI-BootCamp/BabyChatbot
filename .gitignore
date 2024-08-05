@@ -12,3 +12,5 @@ front/constants/badwords.js
 
 # 모델 파일 삭제
 pythonServer/questionData/*
+
+ChatServer/springPinecone/src/main/resources/*

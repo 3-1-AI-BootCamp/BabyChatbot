@@ -1,27 +1,10 @@
-# BabyChatbot
-아이를 위한 챗봇
-
-## 개발 환경
-### front
-#### expo(추후 react native로 변경될 수 있음)
-
-### backend
-#### spring
-
-### ai
-#### python
-
-### DB
-#### mongoDB
-
-## 실행 방법
-### cd front
-### npm install
-### npx expo start
+FastApiEmbedding
+텍스트를 임베딩해주는 fast api 서버(허깅 페이스 multilingual 모델 사용)
 
 
-#### (백엔드) chatServer/gptChat 으로 이동해서 프로젝트 오픈할 때 build.gradle을 선택해서 프로젝트 오픈
-#### (프론트) front로 이동 후
-npm install
-package.json이 있는 디렉터리에 .env 추가 후 API_KEY='your_api_key' 입력
-npx expo start
+springPinecone
+pinecone 벡터db 기반으로 백엔드 구성
+
+
+로그인 미구현
+백엔드 api 요청만 가능한 상태
