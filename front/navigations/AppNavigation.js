@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Welcome, Login, Register, Home, Chat, Profile, Saved, Fun, HospitalMapScreen } from '../screens'
+import { Welcome, Login, Register, Home, Chat, Profile, Saved, Fun, HospitalMapScreen, FAQ } from '../screens'
 import { NavigationContainer } from '@react-navigation/native'
 import BottomTabNavigation from './BottomTabNavigation'
 
@@ -75,6 +75,13 @@ const AppNavigation = () => {
                 <Stack.Screen
                     name="HospitalMapScreen"
                     component={HospitalMapScreen}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="FAQ"
+                    component={FAQ}
                     options={{
                         headerShown: false,
                     }}

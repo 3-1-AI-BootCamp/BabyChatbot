@@ -50,6 +50,9 @@ const Home = ({ navigation }) => {
         <Pressable style={styles.wrapper} onPress={() => navigation.navigate('Fun')}>
           <Text style={styles.text}>오늘의 무당님</Text>
         </Pressable>
+        <Pressable style={styles.wrapper} onPress={() => navigation.navigate('FAQ')}>
+          <Text style={styles.text}>FAQ</Text>
+        </Pressable>
       </View>
 
       <View style={styles.bottomSection}>

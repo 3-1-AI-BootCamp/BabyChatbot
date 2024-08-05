@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -10,7 +10,7 @@ import MessageBubble from '../components/MessageBubble';
 import useChat from '../hooks/useChat';
 import { COLORS } from '../constants';
 
-const Chat = ({ navigation }) => {
+const Chat = ({ navigation, route }) => {
   const {
     inputMessage,
     setInputMessage,
@@ -19,6 +19,12 @@ const Chat = ({ navigation }) => {
     generateText,
     endChat,
   } = useChat(navigation);
+
+  useEffect(() => {
+    if (route.params?.initialQuestion) {
+      generateText(route.params.initialQuestion);
+    }
+  }, [route.params?.initialQuestion]);
 
   const handleBackPress = () => {
     endChat();
@@ -71,9 +77,9 @@ const Chat = ({ navigation }) => {
         </View>
 
         <InputBar
-          value={inputMessage} // value prop 설정
-          onChangeText={handleInputChange} // onChangeText prop 설정
-          onSend={handleSubmit} // onSend prop 설정
+          value={inputMessage}
+          onChangeText={handleInputChange}
+          onSend={handleSubmit}
         />
       </SafeAreaView>
     </SafeAreaProvider>
