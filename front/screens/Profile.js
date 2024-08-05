@@ -100,6 +100,14 @@ const Profile = ({ navigation, route }) => {
                         style={styles.backdesignIcon}
                         source={images.backDesign}
                     />
+                    <View style={styles.iconContainer}>
+                        <Pressable onPress={() => navigation.goBack()} style={styles.iconWrapper}>
+                            <Image
+                            style={styles.icon}
+                            source={images.back}
+                            />
+                        </Pressable>
+                    </View>
                 </View>
 
                 <View style={styles.profileImageContainer}>
@@ -239,6 +247,21 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: fp(2.2),
         fontWeight: 'bold',
+    },
+    iconContainer: {
+        position: 'absolute',
+        top: hp(5),
+        left: wp(4),
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    iconWrapper: {
+        marginHorizontal: wp(2),
+        marginTop: hp(1.3),
+    },
+    icon: {
+        width: wp(6),
+        height: wp(6),
     },
 });
 

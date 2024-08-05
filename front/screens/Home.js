@@ -92,11 +92,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconWrapper: {
-    marginHorizontal: wp(4),
+    marginHorizontal: wp(2),
+    marginTop: hp(1.3),
   },
   icon: {
-    width: wp(7),
-    height: wp(7),
+    width: wp(6),
+    height: wp(6),
   },
   centerIconContainer: {
     justifyContent: 'center',
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#ffffff',
-    fontSize: fp(4),
+    fontSize: fp(4.1),
     marginBottom: hp(1),
   },
   bottomSection: {

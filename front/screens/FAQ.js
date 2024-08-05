@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e0e0e0',
   },
   faqText: {
-    fontSize: fp(2.5),
+    fontSize: fp(2.8),
   },
 });
 
