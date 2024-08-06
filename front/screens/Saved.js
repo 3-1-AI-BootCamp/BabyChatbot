@@ -28,8 +28,10 @@ const Saved = ({ navigation }) => {
       const parsedChats = chats.map(([key, value]) => ({
         id: key,
         messages: JSON.parse(value),
-        date: new Date(key.split('_')[1]).toLocaleString(),
+        date: new Date(key.split('_')[1]),
       }));
+      // 최신 날짜순으로 정렬
+      parsedChats.sort((a, b) => b.date - a.date);
       setSavedChats(parsedChats);
     } catch (error) {
       console.error('Error loading saved chats:', error);
@@ -41,7 +43,7 @@ const Saved = ({ navigation }) => {
       style={styles.chatItem}
       onPress={() => navigation.navigate('Chat', { savedChatData: item })}
     >
-      <Text style={[styles.chatDate, { color: colors.text }]}>{item.date}</Text>
+      <Text style={[styles.chatDate, { color: colors.text }]}>{item.date.toLocaleString()}</Text>
       <Text style={[styles.chatPreview, { color: colors.text }]}>
         {item.messages[0]?.text.substring(0, 50)}...
       </Text>
@@ -72,6 +74,7 @@ const Saved = ({ navigation }) => {
           renderItem={renderChatItem}
           keyExtractor={item => item.id}
           style={styles.content}
+          contentContainerStyle={styles.contentContainer}
         />
       ) : (
         <View style={styles.content}>
@@ -115,6 +118,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  contentContainer: {
+    paddingBottom: hp(10), // 하단바를 위한 여백 추가
   },
   contentText: {
     fontSize: fp(2.5),
