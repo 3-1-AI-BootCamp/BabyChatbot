@@ -45,6 +45,7 @@ const SajuFortune = ({ userData, host, port }) => {
 
     return (
         <View style={styles.container}>
+            <View style={styles.textWrapper}>
             <Text style={styles.contentText}>사주 운세</Text>
             {userData && (
                 <View>
@@ -54,6 +55,7 @@ const SajuFortune = ({ userData, host, port }) => {
                     <Text style={styles.contentText}>{fortune}</Text>
                 </View>
             )}
+            </View>
         </View>
     );
 };
@@ -63,14 +65,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#f0f8ff',
+        width: '100%',
+    },
+    textWrapper: {
+        width: '100%',
+        backgroundColor: '#f0f8ff',
+        paddingHorizontal: wp(10),
     },
     contentText: {
         fontSize: fp(2.5),
         fontWeight: 'bold',
         color: '#000',
         textAlign: 'center',
-        paddingHorizontal: wp(10),
     },
 });
 

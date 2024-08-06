@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserLocation } from '../utils/locationUtils';
-import { generateGPTResponse, getHospital, getConsulting, getMedicalInfo, getBabyProduct, getSaju, getStar, getTaemong, getTag, getChinese, getOtherParent } from '../utils/apiUtils';
+import { getHospital, getConsulting, getMedicalInfo, getBabyProduct, getFortune, getTag, getInfo } from '../utils/apiUtils';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { exampleQuestions, badwords } from '../constants';
 import { host, port } from '@env';
@@ -113,24 +113,24 @@ const useChat = (navigation) => {
         let botMessage;
         console.log('Tags:', tags);
 
-        if (tags.includes('병원')) {
+        if (tags.includes('부모 고민 상담')) {
+          botMessage = await getConsulting(question, host, port);
+        } else if (tags.includes('병원')) {
             botMessage = await getHospital(userLocation, question, host, port);
         } else if (tags.includes('아기 용품')) {
             botMessage = await getBabyProduct(question, host, port);
         } else if (tags.includes('의학 정보')) {
             botMessage = await getMedicalInfo(question, host, port);
         } else if (tags.includes('태몽')) {
-            botMessage = await getTaemong(question, host, port);
+            botMessage = await getFortune('태몽');
         } else if (tags.includes('사주')) {
-            botMessage = await getSaju();
+          botMessage = await getFortune('사주');
         } else if (tags.includes('별자리 운세')) {
-            botMessage = await getStar();
+            botMessage = await getFortune('별자리 운세');
         } else if (tags.includes('십이지 운세')) {
-          botMessage = await getChinese();
-        } else if (tags.includes('부모 고민 상담')) {
-            botMessage = await getConsulting(question, host, port);
-        } else if (tags.includes('다른 부모들의 답변')) {
-            botMessage = await getOtherParent(question, host, port);
+            botMessage = await getFortune('십이지 운세');
+        } else if (tags.includes('육아 보조금') || tags.includes('예방 접종')) {
+          botMessage = await getInfo(tags.includes('육아 보조금') ? 'support' : 'vaccination');
         } else {
             botMessage = {
                 _id: Math.random().toString(36).substring(7),
