@@ -3,11 +3,8 @@ import { getHospital } from "./hospitalLocation";
 import { getConsulting } from "./consulting";
 import { getMedicalInfo } from "./doctor";
 import { getBabyProduct } from "./babyProduct";
-import { getSaju } from "./saju";
-import { getStar } from "./star";
-import { getChinese } from "./chinese";
-import { getTaemong } from "./taemong";
+import { getFortune } from "./fortune";
 import { getTag } from "./tag";
-import { getOtherParent } from "./otherParent";
+import { getInfo } from "./info";
 
-export { generateGPTResponse, getHospital, getConsulting, getMedicalInfo, getBabyProduct, getSaju, getStar, getChinese, getTaemong, getTag, getOtherParent };
+export { generateGPTResponse, getHospital, getConsulting, getMedicalInfo, getBabyProduct, getFortune, getTag, getInfo };
