@@ -61,12 +61,6 @@ const Fun = () => {
                         source={images.icon}
                     />
                 </View>
-                <TouchableOpacity style={styles.headerButton}>
-                    <Image
-                        style={styles.headerIcon}
-                        source={images.list}
-                    />
-                </TouchableOpacity>
                 <View style={styles.headerButton} />
             </View>
             <View style={[styles.tabContainer, { backgroundColor: colors.primary }]}>

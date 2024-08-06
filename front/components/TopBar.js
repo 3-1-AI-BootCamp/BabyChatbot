@@ -1,50 +1,64 @@
 import React from 'react';
-import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { images } from '../constants';
+import { View, TouchableOpacity, Image, StyleSheet, StatusBar, Dimensions, SafeAreaView } from 'react-native';
+import { useTheme } from '../themes/ThemeProvider';  // 테마 프로바이더 import 추가
+
+const { width, height } = Dimensions.get('window');
+
+const wp = (percentage) => (width * percentage) / 100;
+const hp = (percentage) => (height * percentage) / 100;
+const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
 const TopBar = ({ onBackPress, onListPress }) => {
+  const { colors } = useTheme();  // useTheme 훅 사용
+
   return (
-    <View style={styles.topBox}>
-      <TouchableOpacity onPress={onBackPress} style={styles.topBarButton}>
-        <Image source={images.back} style={styles.icon} />
-      </TouchableOpacity>
-      <View style={styles.babyLogo}>
-        <Image source={images.icon} style={styles.icon1} />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
+      <View style={[styles.header, { backgroundColor: colors.primary }]}>
+        <TouchableOpacity onPress={onBackPress} style={styles.headerButton}>
+          <Image source={require('../assets/images/back.png')} style={styles.icon} />
+        </TouchableOpacity>
+        <View style={styles.iconContainer}>
+          <Image source={require('../assets/images/icon.jpg')} style={styles.centerIcon} />
+        </View>
+        <TouchableOpacity onPress={onListPress} style={styles.headerButton}>
+          <Image source={require('../assets/images/list.png')} style={styles.icon} />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={onListPress} style={styles.topBarButton}>
-        <Image source={images.list} style={styles.icon} />
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  topBox: {
+  container: {
     width: '100%',
-    height: 60,
-    paddingHorizontal: 20,
-    backgroundColor: '#d3ebff',
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
-  topBarButton: {
-    height: 50,
-    width: 50,
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: wp(4),
+    height: hp(8),
+  },
+  headerButton: {
+    padding: wp(2),
+    width: wp(10),
+    height: wp(10),
     justifyContent: 'center',
+    alignItems: 'center',
   },
   icon: {
-    width: 32,
-    height: 24,
+    width: wp(6),
+    height: wp(6),
   },
-  babyLogo: {
+  iconContainer: {
     flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  icon1: {
-    width: 40,
-    height: 40,
+  centerIcon: {
+    width: wp(10),
+    height: wp(10),
   },
 });
 

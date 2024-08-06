@@ -7,5 +7,6 @@ import Saved from './Saved'
 import Welcome from './Welcome'
 import Fun from './Fun'
 import HospitalMapScreen from './HospitalMapScreen'
+import FAQ from './FAQ'
 
-export { Home, Chat, Login, Register, Profile, Saved, Welcome, Fun, HospitalMapScreen }
+export { Home, Chat, Login, Register, Profile, Saved, Welcome, Fun, HospitalMapScreen, FAQ }
