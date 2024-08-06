@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, SafeAreaView, Dimensions, StatusBar } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, SafeAreaView, Dimensions, StatusBar, Alert } from 'react-native';
 import { useTheme } from '../themes/ThemeProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -38,6 +38,32 @@ const Saved = ({ navigation }) => {
     }
   };
 
+  const clearAllChats = async () => {
+    Alert.alert(
+      "모든 대화 삭제",
+      "정말로 모든 저장된 대화를 삭제하시겠습니까?",
+      [
+        {
+          text: "취소",
+          style: "cancel"
+        },
+        {
+          text: "삭제",
+          onPress: async () => {
+            try {
+              const keys = await AsyncStorage.getAllKeys();
+              const chatKeys = keys.filter(key => key.startsWith('chat_'));
+              await AsyncStorage.multiRemove(chatKeys);
+              setSavedChats([]);
+            } catch (error) {
+              console.error('Error clearing chats:', error);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const renderChatItem = ({ item }) => (
     <TouchableOpacity
       style={styles.chatItem}
@@ -66,7 +92,12 @@ const Saved = ({ navigation }) => {
             source={require('../assets/images/icon.jpg')}
           />
         </View>
-        <View style={styles.headerButton} />
+        <TouchableOpacity style={styles.headerButton} onPress={clearAllChats}>
+          <Image
+            style={styles.headerIcon}
+            source={require('../assets/images/trash.png')}
+          />
+        </TouchableOpacity>
       </View>
       {savedChats.length > 0 ? (
         <FlatList
