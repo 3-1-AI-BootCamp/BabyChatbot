@@ -40,5 +40,5 @@
 // };
 
 export const getTag = async (question, host, port) => {
-    return { text: '', tags: ['부모 고민 상담'] };
+    return { text: '', tags: ['아기 용품'] };
 };
