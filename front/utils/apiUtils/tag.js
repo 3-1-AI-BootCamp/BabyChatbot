@@ -40,5 +40,5 @@
 // };
 
 export const getTag = async (question, host, port) => {
-    return { text: '', tags: ['육아 보조금'] };
+    return { text: '', tags: ['부모 고민 상담'] };
 };
