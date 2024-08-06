@@ -35,7 +35,8 @@ public class PineconeService {
             @org.springframework.beans.factory.annotation.Value("${openai.api.key}") String openaiApiKey
     ) {
         Pinecone pc = new Pinecone.Builder(pineconeApiKey).build();
-        this.index = pc.getIndexConnection("vector384");
+//        this.index = pc.getIndexConnection("vector384");
+        this.index = pc.getIndexConnection("tag-vector384");
         this.indexOpenai = pc.getIndexConnection("vector1536");
         this.embedding = new HuggingfaceEmbedding(fastApiUrl);
         this.openEmbedding = new OpenAIEmbedding(openaiApiKey);
@@ -62,7 +63,7 @@ public class PineconeService {
 
 
 //    Pinecone 데이터 조회 함수(질문 텍스트를 임베딩하고 쿼리로 결과 가져옴)
-    public List<Map<String, String>> querySimilarQuestions(String question, int topK) {
+    public List<Map<String, String>> querySimilarQuestions(String question, int topK, String namespace) {
         List<Float> queryVector = embedding.getEmbedding(question);
         QueryResponseWithUnsignedIndices response = index.query(topK, queryVector, null, null, null, namespace, null, true, true);
         List<ScoredVectorWithUnsignedIndices> matches = response.getMatchesList();
@@ -94,11 +95,11 @@ public class PineconeService {
 
 
 //    Openai 데이터 조회 함수(텍스트를 임베딩하고 쿼리로 결과 가져옴)
-    public List<Map<String, String>> querySimilarQuestionsOpenai(String question, int topK) {
+    public List<Map<String, String>> querySimilarQuestionsOpenai(String question, int topK, String namespace) {
         List<Float> queryVector = openEmbedding.getEmbedding(question).stream()
                 .map(Double::floatValue)
                 .collect(Collectors.toList());
-        QueryResponseWithUnsignedIndices response = indexOpenai.query(topK, queryVector, null, null, null, namespaceOpenai, null, true, true);
+        QueryResponseWithUnsignedIndices response = indexOpenai.query(topK, queryVector, null, null, null, namespace, null, true, true);
         List<ScoredVectorWithUnsignedIndices> matches = response.getMatchesList();
 
         return matches.stream()

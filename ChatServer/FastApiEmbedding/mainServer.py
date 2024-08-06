@@ -37,7 +37,7 @@ async def order_create_embeddings(request: embedType.EmbeddingRequest):
 
 # 텍스트 라벨링 요청 처리
 @app.post("/label", response_model=labelType.TextResponse)
-async def order_verifyLabeling(request: labelType.TextRequest):
+async def order_classify_tag(request: labelType.TextRequest):
     from service import debertaLabeling as labeling
     predicted_label = await labeling.classify_tag(request.text, deberta_tokenizer, deberta_model)
     

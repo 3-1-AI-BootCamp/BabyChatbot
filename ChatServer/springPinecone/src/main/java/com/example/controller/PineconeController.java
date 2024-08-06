@@ -32,9 +32,9 @@ public class PineconeController {
         int topK = (int) request.get("topK");
 
         if ("openai".equals(request.get("verifyType"))) {
-            return pineconeService.querySimilarQuestionsOpenai(question, topK);
+            return pineconeService.querySimilarQuestionsOpenai(question, topK, "question-answer");
         } else {
-            return pineconeService.querySimilarQuestions(question, topK);
+            return pineconeService.querySimilarQuestions(question, topK, "qa-namespace");
         }
     }
 

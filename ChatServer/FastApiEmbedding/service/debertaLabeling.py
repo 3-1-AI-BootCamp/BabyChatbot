@@ -11,8 +11,6 @@ tags = [
 # 텍스트 라벨링
 async def classify_tag(targetSentence, tokenizer, model):
     id2tag = {id: tag for id, tag in enumerate(tags)}
-    print(predict_tag(targetSentence, tokenizer, model, id2tag))
-    print(predict_tag(targetSentence, tokenizer, model, id2tag))
     
     return predict_tag(targetSentence, tokenizer, model, id2tag)
 
