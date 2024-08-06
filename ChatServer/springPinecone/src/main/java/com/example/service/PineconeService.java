@@ -25,7 +25,7 @@ public class PineconeService {
     private HuggingfaceEmbedding embedding;
     private OpenAIEmbedding openEmbedding;
     //String namespace = "qa-namespace";
-    String namespace = "otherMom";
+    String namespace = "otherParent";
     String namespaceOpenai = "question-answer";
 
 
