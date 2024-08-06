@@ -18,7 +18,7 @@ const useChat = (navigation) => {
       const initialMessages = [
         {
           _id: 1,
-          text: '안녕하세요! 저는 육아에 대한 질문에 답변을 드리는 AI 어시스턴트입니다. 아래 예시 질문 중 하나를 선택하거나 직접 질문을 입력해주세요.',
+          text: '안녕하세요! 저는 육아에 대한 질문에 답변을 드리는 AI 어시스턴트입니다. 예시 질문 중 하나를 선택하거나 직접 질문을 입력해주세요.',
           createdAt: new Date(),
           user: { _id: 2, name: 'ChatGPT' },
         },
