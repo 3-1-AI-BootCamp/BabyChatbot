@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserLocation } from '../utils/locationUtils';
-import { getHospital, getConsulting, getMedicalInfo, getBabyProduct, getFortune, getTag, getInfo } from '../utils/apiUtils';
+import { getHospital, getMedicalInfo, getBabyProduct, getFortune, getTag, getInfo } from '../utils/apiUtils';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { exampleQuestions, badwords } from '../constants';
 import { host, port } from '@env';
@@ -11,7 +11,7 @@ const useChat = (navigation) => {
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState(''); // 대화 내역을 저장할 상태 추가
 
   useEffect(() => {
     if (exampleQuestions && Array.isArray(exampleQuestions)) {
@@ -76,6 +76,25 @@ const useChat = (navigation) => {
     return { isValid: true, errorMessage: '' };
   };
 
+  const sendBackendRequest = async (question) => {
+    try {
+      console.log('백엔드 요청을 보내는 중이에요...');
+      console.log('host: ', host)
+      const response = await fetch(`http://${host}:8080/api/llm/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatSentence: question }),
+      });
+
+      const data = await response.json();
+      console.log('Backend response:', data);
+    } catch (error) {
+      console.error('Error sending backend request:', error);
+    }
+  };
+
   const generateText = async (question = inputMessage) => {
     const message = {
       _id: Math.random().toString(36).substring(7),
@@ -100,6 +119,9 @@ const useChat = (navigation) => {
       return;
     }
   
+    // 추가 백엔드 요청
+    await sendBackendRequest(question);
+  
     setIsTyping(true);
   
     try {
@@ -107,22 +129,14 @@ const useChat = (navigation) => {
       let botMessage;
       console.log('Tags:', tags);
   
-      if (tags.includes('부모 고민 상담')) {
-        botMessage = await getConsulting(question, host, port);
-      } else if (tags.includes('병원')) {
+      if (tags.includes('병원')) {
         botMessage = await getHospital(userLocation, question, host, port);
       } else if (tags.includes('아기 용품')) {
         botMessage = await getBabyProduct(question, host, port);
       } else if (tags.includes('의학 정보')) {
         botMessage = await getMedicalInfo(question, host, port);
-      } else if (tags.includes('태몽')) {
-        botMessage = await getFortune('태몽');
-      } else if (tags.includes('사주')) {
-        botMessage = await getFortune('사주');
-      } else if (tags.includes('별자리 운세')) {
-        botMessage = await getFortune('별자리 운세');
-      } else if (tags.includes('십이지 운세')) {
-        botMessage = await getFortune('십이지 운세');
+      } else if (tags.includes('사주') || tags.includes('운세')) {
+        botMessage = await getFortune(tags.includes('사주') ? '사주' : '운세');
       } else if (tags.includes('육아 보조금') || tags.includes('예방 접종')) {
         botMessage = await getInfo(tags.includes('육아 보조금') ? 'support' : 'vaccination');
       } else {
@@ -137,6 +151,10 @@ const useChat = (navigation) => {
       botMessage._id = Math.random().toString(36).substring(7); // Ensure _id is unique
       setIsTyping(false);
       setMessages((previousMessage) => GiftedChat.append(previousMessage, [botMessage]));
+
+      // 이전 대화 내역 업데이트
+      setChatHistory(prevHistory => `${prevHistory}\n사용자: ${question}\nChatGPT: ${botMessage.text}`);
+      
       saveChatHistory();
     } catch (error) {
       console.error("Error generating response:", error);
@@ -151,7 +169,6 @@ const useChat = (navigation) => {
     }
     setInputMessage('');
   };
-  
 
   return {
     inputMessage,
