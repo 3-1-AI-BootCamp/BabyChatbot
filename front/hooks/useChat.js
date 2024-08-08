@@ -100,6 +100,14 @@ const useChat = (navigation) => {
       return;
     }
   
+
+
+
+
+
+
+
+    
     setIsTyping(true);
   
     try {
