@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserLocation } from '../utils/locationUtils';
-import { getHospital, getMedicalInfo, getBabyProduct, getFortune, getTag, getInfo } from '../utils/apiUtils';
+import { getHospital, getConsulting, getMedicalInfo, getBabyProduct, getFortune, getTag, getInfo } from '../utils/apiUtils';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { exampleQuestions, badwords } from '../constants';
 import { host, port } from '@env';
@@ -121,7 +121,7 @@ const useChat = (navigation) => {
   
     // 추가 백엔드 요청
     await sendBackendRequest(question);
-  
+
     setIsTyping(true);
   
     try {
@@ -154,7 +154,7 @@ const useChat = (navigation) => {
 
       // 이전 대화 내역 업데이트
       setChatHistory(prevHistory => `${prevHistory}\n사용자: ${question}\nChatGPT: ${botMessage.text}`);
-      
+
       saveChatHistory();
     } catch (error) {
       console.error("Error generating response:", error);
