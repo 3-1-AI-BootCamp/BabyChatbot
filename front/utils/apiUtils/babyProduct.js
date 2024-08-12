@@ -1,4 +1,4 @@
-import { NAVER_SHOP_ID, NAVER_SHOP_SECRET } from '@env';
+import { API_KEY, NAVER_SHOP_ID, NAVER_SHOP_SECRET } from '@env';
 
 const categories = {
   수유용품: ['젖병', '분유', '모유저장팩', '유축기', '수유쿠션', '수유패드', '젖병소독기', '수유등', '수유티', '젖꼭지', '젖병브러쉬', '분유케이스', '분유포트', '수유팔찌'],
@@ -16,38 +16,75 @@ const categories = {
   신생아용품: ['배냇저고리', '손싸개', '발싸개', '배띠', '가제수건', '신생아모자', '신생아손발싸개', '탯줄관리용품', '신생아내복']
 };
 
-export const getBabyProduct = async (question) => {
-  if (!question || typeof question !== 'string') {
-    return {
-      _id: Math.random().toString(36).substring(7),
-      text: "죄송합니다. 유효한 질문을 입력해주세요.",
-      createdAt: new Date(),
-      user: { _id: 2, name: 'ChatGPT' },
-    };
-  }
-
+function findKeywordInCategories(question) {
   const lowercaseQuestion = question.toLowerCase();
-  const tags = ['아기 용품'];
-  const keywords = lowercaseQuestion.match(/\b\w+\b/g) || [];
-
-  // 키워드 및 카테고리 매칭
-  for (const [category, keywordsList] of Object.entries(categories)) {
-    for (const keyword of keywordsList) {
+  for (const [category, keywords] of Object.entries(categories)) {
+    for (const keyword of keywords) {
       if (lowercaseQuestion.includes(keyword.toLowerCase())) {
-        tags.push(keyword, category);
-        break;
+        return keyword;
       }
     }
   }
+  return null;
+}
 
-  const uniqueTags = [...new Set(tags)];
-  let query = uniqueTags.join(" ") + " " + keywords.join(" ");
-  query = encodeURIComponent(query.trim());
+export const getBabyProduct = async (question, lastQuestion) => {
+  console.log("question, lastQuestion:", question, lastQuestion);
+  const targetQuestion = question || lastQuestion; // 현재 질문이나 마지막 질문을 사용
+  if (!targetQuestion || typeof targetQuestion !== 'string') {
+    return createErrorResponse("유효한 질문을 입력해주세요.");
+  }
 
   try {
+    const keyword = findKeywordInCategories(targetQuestion);
+
+    if (keyword) {
+      return await searchProduct(keyword);
+    } else {
+      return await provideProductInformation(targetQuestion);
+    }
+  } catch (error) {
+    console.error('Error in getBabyProduct:', error);
+    return createErrorResponse("죄송해요. 지금 처리 중 문제가 발생했어요. 잠시 후에 다시 시도해 주시겠어요?");
+  }
+};
+
+async function provideProductInformation(question) {
+  const messages = [
+    { role: 'system', content: '아기 용품 전문가로서, 사용자의 질문에 대해 적절한 제품을 추천하고 간단한 설명을 제공해주세요.' },
+    { role: 'user', content: question },
+  ];
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages: messages,
+    }),
+  });
+
+  const data = await response.json();
+  const answer = data.choices[0].message.content.trim();
+  console.log(answer);
+
+  return {
+    _id: Math.random().toString(36).substring(7),
+    text: `${answer}\n\n이 제품에 대한 판매 정보나 링크를 원하시면 ~찾아줘나 ~검색해줘 와 같이 질문해주세요.`,
+    createdAt: new Date(),
+    user: { _id: 2, name: 'ChatGPT' },
+  };
+}
+
+async function searchProduct(keyword) {
+  try {
+    const query = encodeURIComponent(keyword);
     const url = `https://openapi.naver.com/v1/search/shop.json?query=${query}&display=3`;
 
-    const response = await fetch(url, {
+    const naverResponse = await fetch(url, {
       method: 'GET',
       headers: {
         'X-Naver-Client-Id': NAVER_SHOP_ID,
@@ -56,47 +93,48 @@ export const getBabyProduct = async (question) => {
       },
     });
 
-    console.log('Response status:', response.status);
-    //console.log('Response headers:', JSON.stringify(response.headers));
-
-    const responseText = await response.text();
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
-    }
-
-    const data = JSON.parse(responseText);
-    console.log('API response:', JSON.stringify(data, null, 2));
+    const naverData = await naverResponse.json();
     
-    if (data.items && data.items.length > 0) {
-      const recommendedProducts = data.items.slice(0, 3);
-
+    if (naverData.items && naverData.items.length > 0) {
+      const recommendedProducts = naverData.items.slice(0, 3);
       const productList = recommendedProducts.map((item, index) => 
         `${index + 1}. ${item.title} - ${parseInt(item.lprice).toLocaleString()}원\n   링크: ${item.link}`
       ).join('\n\n');
 
       return {
         _id: Math.random().toString(36).substring(7),
-        text: `"${decodeURIComponent(query)}" 검색 결과 추천 상품:\n\n${productList}`,
+        text: `"${keyword}"에 관련된 제품을 찾아봤어요. 어떠세요?\n\n${productList}`,
         createdAt: new Date(),
         user: { _id: 2, name: 'ChatGPT' },
       };
+    } else {
+      return createErrorResponse(`죄송해요. "${keyword}"에 관련된 제품을 찾지 못했어요. 다른 키워드로 다시 물어봐 주시겠어요?`);
     }
-
-    return {
-      _id: Math.random().toString(36).substring(7),
-      text: `죄송합니다. "${decodeURIComponent(query)}"에 대한 상품을 찾지 못했습니다.`,
-      createdAt: new Date(),
-      user: { _id: 2, name: 'ChatGPT' },
-    };
-
   } catch (error) {
-    console.error('Error searching for baby products:', error);
-    return {
-      _id: Math.random().toString(36).substring(7),
-      text: "상품을 검색하는 데 문제가 발생했습니다. 나중에 다시 시도해주세요.",
-      createdAt: new Date(),
-      user: { _id: 2, name: 'ChatGPT' },
-    };
+    console.error('Error searching for products:', error);
+    return createErrorResponse("죄송해요. 지금 제품을 찾는 데 문제가 생겼어요. 잠시 후에 다시 시도해 주시겠어요?");
+  }
+}
+
+function createErrorResponse(message) {
+  return {
+    _id: Math.random().toString(36).substring(7),
+    text: message,
+    createdAt: new Date(),
+    user: { _id: 2, name: 'ChatGPT' },
+  };
+}
+
+export const handleUserResponse = async (response, lastQuestion, setLastQuestion) => {
+  const lowercaseResponse = response.toLowerCase().trim();
+
+  if (['네', '예', '응', '원해요', '보여줘'].some(word => lowercaseResponse.includes(word))) {
+    // 사용자가 이전 질문에 대해 더 많은 정보를 요청하는 경우
+    return await getBabyProduct(null, lastQuestion); // 마지막 질문에 대해 검색
+  } else {
+    // 새로운 질문으로 처리
+    const result = await getBabyProduct(response);
+    setLastQuestion(response); // 마지막 질문을 현재 질문으로 업데이트
+    return result;
   }
 };

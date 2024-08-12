@@ -11,7 +11,9 @@ const useChat = (navigation) => {
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
-  const [chatHistory, setChatHistory] = useState(''); // 대화 내역을 저장할 상태 추가
+  const [chatHistory, setChatHistory] = useState('');
+  const [lastQuestion, setLastQuestion] = useState(null);
+  const [lastProductInfo, setLastProductInfo] = useState(null);
 
   useEffect(() => {
     if (exampleQuestions && Array.isArray(exampleQuestions)) {
@@ -100,10 +102,11 @@ const useChat = (navigation) => {
       _id: Math.random().toString(36).substring(7),
       text: question,
       createdAt: new Date(),
-      user: { _id: 1 }, // 사용자 메시지에 user 설정
+      user: { _id: 1 },
     };
   
-    setMessages((previousMessage) => GiftedChat.append(previousMessage, [message]));
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, [message]));
+    setLastQuestion(question);
   
     const filterResult = performFirstFilter(question);
     if (!filterResult.isValid) {
@@ -114,26 +117,26 @@ const useChat = (navigation) => {
         createdAt: new Date(),
         user: { _id: 2, name: 'ChatGPT' }, // 오류 메시지에 user 설정
       };
-      setMessages((previousMessage) => GiftedChat.append(previousMessage, [errorMsg]));
+      setMessages((previousMessages) => GiftedChat.append(previousMessages, [errorMsg]));
       setInputMessage('');
       return;
     }
   
-    // 추가 백엔드 요청
-    await sendBackendRequest(question);
-  
+    // 백엔드에서 태그보다 우선 수행할 Vector Search 요청을 보내는 함수
+    //await sendBackendRequest(question);
     setIsTyping(true);
   
     try {
       const { tags } = await getTag(question, host, port);
       let botMessage;
+  
       console.log('Tags:', tags);
   
       if (tags.includes('병원')) {
         botMessage = await getHospital(userLocation, question, host, port);
       } else if (tags.includes('아기 용품')) {
-        botMessage = await getBabyProduct(question, host, port);
-      } else if (tags.includes('의학 정보')) {
+        botMessage = await getBabyProduct(chatHistory, question); // 저장된 대화(chatHistory)를 전달
+      } else if (tags.includes('육아 의학 상담')) {
         botMessage = await getMedicalInfo(question, host, port);
       } else if (tags.includes('사주') || tags.includes('운세')) {
         botMessage = await getFortune(tags.includes('사주') ? '사주' : '운세');
@@ -144,17 +147,17 @@ const useChat = (navigation) => {
           _id: Math.random().toString(36).substring(7),
           text: "죄송합니다. 해당 질문에 대한 정보를 찾을 수 없습니다.",
           createdAt: new Date(),
-          user: { _id: 2, name: 'ChatGPT' }, // 기본 응답 메시지에 user 설정
+          user: { _id: 2, name: 'ChatGPT' },
         };
       }
   
       botMessage._id = Math.random().toString(36).substring(7); // Ensure _id is unique
       setIsTyping(false);
-      setMessages((previousMessage) => GiftedChat.append(previousMessage, [botMessage]));
-
+      setMessages((previousMessages) => GiftedChat.append(previousMessages, [botMessage]));
+  
       // 이전 대화 내역 업데이트
       setChatHistory(prevHistory => `${prevHistory}\n사용자: ${question}\nChatGPT: ${botMessage.text}`);
-      
+  
       saveChatHistory();
     } catch (error) {
       console.error("Error generating response:", error);
@@ -163,9 +166,9 @@ const useChat = (navigation) => {
         _id: Math.random().toString(36).substring(7),
         text: "죄송합니다. 응답을 생성하는 중 오류가 발생했습니다.",
         createdAt: new Date(),
-        user: { _id: 2, name: 'ChatGPT' }, // 오류 메시지에 user 설정
+        user: { _id: 2, name: 'ChatGPT' },
       };
-      setMessages((previousMessage) => GiftedChat.append(previousMessage, [errorMessage]));
+      setMessages((previousMessages) => GiftedChat.append(previousMessages, [errorMessage]));
     }
     setInputMessage('');
   };
