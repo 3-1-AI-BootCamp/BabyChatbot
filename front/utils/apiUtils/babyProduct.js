@@ -1,90 +1,157 @@
 import { API_KEY, NAVER_SHOP_ID, NAVER_SHOP_SECRET } from '@env';
 
 const categories = {
-  수유용품: ['젖병', '분유', '모유저장팩', '유축기', '수유쿠션', '수유패드', '젖병소독기', '수유등', '수유티', '젖꼭지', '젖병브러쉬', '분유케이스', '분유포트', '수유팔찌'],
-  이유식용품: ['이유식', '이유식마스터기', '이유식용기', '이유식냄비', '아기수저', '아기포크', '빨대컵', '이유식책', '이유식틀', '유아식판', '유아식탁보', '이유식가위', '이유식스푼', '실리콘턱받이'],
-  기저귀용품: ['기저귀', '물티슈', '기저귀케이크', '기저귀가방', '기저귀정리함', '기저귀갈이대', '기저귀크림', '엉덩이파우더', '기저귀털이', '기저귀스프레이', '천기저귀', '수영장기저귀'],
-  목욕스킨케어: ['베이비로션', '베이비오일', '아기샴푸', '아기욕조', '목욕타올', '아기면봉', '베이비파우더', '아기선크림', '아기비누', '아기bath', '목욕장난감', '아기샤워기', '아기목욕의자', '배꼽소독솜', '아기손톱가위', '아기빗', '아기면봉', '아기귀걸이'],
-  수면용품: ['아기침대', '유아베개', '스와들', '아기이불', '모빌', '백색소음기', '수면조끼', '아기침대가드', '유아베개', '아기침구세트', '아기요', '아기매트리스', '아기침대모기장', '수유쿠션'],
-  의류: ['아기옷', '바디수트', '아기내복', '아기양말', '아기모자', '턱받이', '속싸개', '아기외출복', '아기신발', '아기장갑', '아기우비', '아기수영복', '아기한복', '아기카디건', '아기조끼', '아기잠옷'],
-  외출용품: ['유모차', '아기띠', '카시트', '아기가방', '보행기', '아기썬캡', '아기선글라스', '아기슬링', '유모차정리함', '유모차레인커버', '아기모기장', '아기미아방지용품', '아기보냉백'],
-  놀이교육용품: ['장난감', '소리나는책', '블록', '모빌', '치발기', '아기체육관', '아기책', '아기퍼즐', '아기그림책', '아기악기', '아기놀이매트', '아기워커', '아기그네', '아기점프', '아기볼풀', '미술놀이세트', '아기칠판'],
-  안전용품: ['베이비모니터', '콘센트커버', '모서리보호대', '안전문', '미끄럼방지매트', '아기안전경보기', '유아안전벨트', '아기안전가드', '아기안전잠금장치', '아기차량용품', '유아헬멧'],
-  위생용품: ['손소독제', '마스크', '체온계', '콧물흡입기', '아기치약', '아기칫솔', '네일케어세트', '귀체온계', '아기면봉', '아기손수건', '살균소독기', '공기청정기'],
-  기타육아용품: ['쪽쪽이', '떡뻥', '아기의자', '아기식탁의자', '아기체중계', '아기발달체조', '아기학습테이블', '유아변기', '유아세면대', '아기욕실의자', '아기발육알림판'],
-  부모용품: ['수유브라', '수유복', '산모패드', '산모벨트', '산후복대', '유축기가방', '산모영양제', '산모방석', '산모슬리퍼', '산모클렌징', '산모마사지크림', '산모좌욕기'],
-  신생아용품: ['배냇저고리', '손싸개', '발싸개', '배띠', '가제수건', '신생아모자', '신생아손발싸개', '탯줄관리용품', '신생아내복']
+  수유용품: ['젖병', '분유', '모유저장팩', '유축기', '수유쿠션', '수유패드', '젖병소독기', '쪽쪽이', '젖꼭지'],
+  이유식용품: ['이유식', '이유식마스터기', '이유식용기', '아기수저', '아기포크', '빨대컵'],
+  기저귀용품: ['기저귀', '물티슈', '기저귀케이크', '기저귀가방', '기저귀정리함', '기저귀갈이대'],
+  목욕스킨케어: ['베이비로션', '베이비오일', '아기샴푸', '아기욕조', '목욕타올', '아기면봉'],
+  수면용품: ['아기침대', '유아베개','아기 베개', '스와들', '아기이불', '모빌', '수면등', '아기침구세트'],
+  의류: ['아기옷', '바디수트', '아기내복', '아기양말', '아기모자', '턱받이', '속싸개'],
+  외출용품: ['유모차', '아기띠', '카시트', '아기가방', '보행기', '아기썬캡', '아기선글라스'],
+  놀이교육용품: ['장난감', '소리나는책', '블록', '모빌', '치발기', '아기체육관', '아기책'],
+  안전용품: ['베이비모니터', '콘센트커버', '모서리보호대', '안전문', '미끄럼방지매트'],
+  위생용품: ['손소독제', '마스크', '체온계', '콧물흡입기', '아기치약', '아기칫솔', '네일케어세트']
 };
 
-function findKeywordInCategories(question) {
-  const lowercaseQuestion = question.toLowerCase();
-  for (const [category, keywords] of Object.entries(categories)) {
-    for (const keyword of keywords) {
-      if (lowercaseQuestion.includes(keyword.toLowerCase())) {
-        return keyword;
-      }
-    }
-  }
-  return null;
-}
+export const getBabyProduct = async (question) => {
+  console.log("Received question:", question);
 
-export const getBabyProduct = async (question, lastQuestion) => {
-  console.log("question, lastQuestion:", question, lastQuestion);
-  const targetQuestion = question || lastQuestion; // 현재 질문이나 마지막 질문을 사용
-  if (!targetQuestion || typeof targetQuestion !== 'string') {
+  if (!question || typeof question !== 'string') {
     return createErrorResponse("유효한 질문을 입력해주세요.");
   }
 
   try {
-    const keyword = findKeywordInCategories(targetQuestion);
+    const intent = await analyzeIntent(question);
+    console.log("Analyzed intent:", intent);
 
-    if (keyword) {
-      return await searchProduct(keyword);
+    if (intent.isNotBabyProduct) {
+      return createErrorResponse("죄송합니다. 아기 용품과 관련된 질문만 답변할 수 있어요.");
+    } else if (intent.needsClarification) {
+      return {
+        _id: Math.random().toString(36).substring(7),
+        text: `"${intent.suggestedKeyword}"를 찾으시는 건가요? 맞다면 "${intent.suggestedKeyword} 찾아줘"라고 말씀해 주세요!`,
+        createdAt: new Date(),
+        user: { _id: 2, name: 'ChatGPT' },
+      };
+    } else if (question.toLowerCase().includes('찾아줘')) {
+      return await searchProduct(intent.keyword);
     } else {
-      return await provideProductInformation(targetQuestion);
+      return {
+        _id: Math.random().toString(36).substring(7),
+        text: `${intent.keyword}에 대해 검색하고 싶으시면 "${intent.keyword} 찾아줘"라고 말씀해 주세요!`,
+        createdAt: new Date(),
+        user: { _id: 2, name: 'ChatGPT' },
+      };
     }
   } catch (error) {
     console.error('Error in getBabyProduct:', error);
-    return createErrorResponse("죄송해요. 지금 처리 중 문제가 발생했어요. 잠시 후에 다시 시도해 주시겠어요?");
+    return createErrorResponse("처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
   }
 };
 
-async function provideProductInformation(question) {
-  const messages = [
-    { role: 'system', content: '아기 용품 전문가로서, 사용자의 질문에 대해 적절한 제품을 추천하고 간단한 설명을 제공해주세요.' },
-    { role: 'user', content: question },
-  ];
+async function analyzeIntent(question) {
+  const allKeywords = Object.values(categories).flat();
+  const prompt = `
+사용자의 질문: "${question}"
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
-      messages: messages,
-    }),
-  });
+다음은 유효한 아기 용품 키워드 목록입니다:
+${allKeywords.join(', ')}
 
-  const data = await response.json();
-  const answer = data.choices[0].message.content.trim();
-  console.log(answer);
+이 질문이 아기 용품과 관련된 것인지 분석해주세요. 다음 형식으로 응답해주세요:
+{
+  "needsClarification": boolean,
+  "keyword": string,
+  "suggestedKeyword": string | null,
+  "isNotBabyProduct": boolean
+}
 
-  return {
-    _id: Math.random().toString(36).substring(7),
-    text: `${answer}\n\n이 제품에 대한 판매 정보나 링크를 원하시면 ~찾아줘나 ~검색해줘 와 같이 질문해주세요.`,
-    createdAt: new Date(),
-    user: { _id: 2, name: 'ChatGPT' },
-  };
+- needsClarification: 사용자의 질문이 모호하여 추가 설명이 필요한 경우 true
+- keyword: 질문에서 찾은 아기 용품 관련 키워드. 반드시 위의 키워드 목록에 있는 것이어야 합니다.
+- suggestedKeyword: 질문이 모호할 경우 제안할 키워드. 반드시 위의 키워드 목록에 있는 것이어야 합니다.
+- isNotBabyProduct: 질문이 아기 용품과 관련이 없거나, 키워드가 위 목록에 없는 경우 true
+
+주의: 
+1. keyword와 suggestedKeyword는 반드시 위의 키워드 목록에 있는 것이어야 합니다.
+2. 질문이 아기 용품과 관련이 있어 보이더라도, 정확히 일치하는 키워드가 목록에 없다면 isNotBabyProduct를 true로 설정하세요.
+3. needsClarification이 true일 경우, suggestedKeyword를 반드시 제공해야 하며, 이 역시 키워드 목록에 있어야 합니다.
+4. isNotBabyProduct가 true일 때는 '죄송합니다. 아기 용품과 관련된 질문만 답변할 수 있어요.'라고 답해야 합니다.
+
+예시:
+질문: "아기가 잘 때 위에 빙글빙글 도는 게 뭐였지?"
+답변:
+{
+  "needsClarification": true,
+  "keyword": "모빌",
+  "suggestedKeyword": "모빌",
+  "isNotBabyProduct": false
+}
+
+질문: "아기 침대 추천해줘"
+답변:
+{
+  "needsClarification": false,
+  "keyword": "아기침대",
+  "suggestedKeyword": null,
+  "isNotBabyProduct": false
+}
+
+질문: "자동차 추천해줘"
+답변:
+{
+  "needsClarification": false,
+  "keyword": "",
+  "suggestedKeyword": null,
+  "isNotBabyProduct": true
+}
+`;
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.2
+      })
+    });
+
+    const data = await response.json();
+    if (data.choices && data.choices.length > 0) {
+      const result = JSON.parse(data.choices[0].message.content);
+      console.log("API Response:", result);
+
+      // 추가 검증
+      if ((!result.keyword || !allKeywords.includes(result.keyword)) && 
+          (!result.suggestedKeyword || !allKeywords.includes(result.suggestedKeyword))) {
+        result.isNotBabyProduct = true;
+      } else {
+        result.isNotBabyProduct = false;
+        if (!result.keyword && result.suggestedKeyword) {
+        result.keyword = result.suggestedKeyword;
+      }
+}
+
+return result;
+    } else {
+      throw new Error("Invalid API response");
+    }
+  } catch (error) {
+    console.error("Error in analyzeIntent:", error);
+    throw error;
+  }
 }
 
 async function searchProduct(keyword) {
+  console.log("searchProduct - 검색 키워드:", keyword);
   try {
     const query = encodeURIComponent(keyword);
     const url = `https://openapi.naver.com/v1/search/shop.json?query=${query}&display=3`;
 
-    const naverResponse = await fetch(url, {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'X-Naver-Client-Id': NAVER_SHOP_ID,
@@ -93,26 +160,33 @@ async function searchProduct(keyword) {
       },
     });
 
-    const naverData = await naverResponse.json();
+    const data = await response.json();
     
-    if (naverData.items && naverData.items.length > 0) {
-      const recommendedProducts = naverData.items.slice(0, 3);
-      const productList = recommendedProducts.map((item, index) => 
-        `${index + 1}. ${item.title} - ${parseInt(item.lprice).toLocaleString()}원\n   링크: ${item.link}`
-      ).join('\n\n');
+    if (data.items && data.items.length > 0) {
+      const products = data.items.slice(0, 3).map((item, index) => {
+        const title = item.title.replace(/<\/?[^>]+(>|$)/g, "");
+        const lprice = parseInt(item.lprice);
+        const hprice = parseInt(item.hprice);
+        let priceText = `${lprice.toLocaleString()}원`;
+        if (hprice > 0 && hprice !== lprice) {
+          priceText = `${lprice.toLocaleString()}원 ~ ${hprice.toLocaleString()}원`;
+        }
+        return `${index + 1}. ${title}\n   가격: ${priceText}\n   판매처: ${item.mallName}\n   링크: ${item.link}`;
+      }).join('\n\n');
 
+      console.log("searchProduct - 검색 결과:", products);
       return {
         _id: Math.random().toString(36).substring(7),
-        text: `"${keyword}"에 관련된 제품을 찾아봤어요. 어떠세요?\n\n${productList}`,
+        text: `"${keyword}"에 관련된 제품들입니다:\n\n${products}`,
         createdAt: new Date(),
         user: { _id: 2, name: 'ChatGPT' },
       };
     } else {
-      return createErrorResponse(`죄송해요. "${keyword}"에 관련된 제품을 찾지 못했어요. 다른 키워드로 다시 물어봐 주시겠어요?`);
+      return createErrorResponse(`죄송합니다. "${keyword}"에 관련된 제품을 찾지 못했습니다.`);
     }
   } catch (error) {
-    console.error('Error searching for products:', error);
-    return createErrorResponse("죄송해요. 지금 제품을 찾는 데 문제가 생겼어요. 잠시 후에 다시 시도해 주시겠어요?");
+    console.error('searchProduct - 제품 검색 오류:', error);
+    return createErrorResponse("제품 검색 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
   }
 }
 
@@ -125,16 +199,6 @@ function createErrorResponse(message) {
   };
 }
 
-export const handleUserResponse = async (response, lastQuestion, setLastQuestion) => {
-  const lowercaseResponse = response.toLowerCase().trim();
-
-  if (['네', '예', '응', '원해요', '보여줘'].some(word => lowercaseResponse.includes(word))) {
-    // 사용자가 이전 질문에 대해 더 많은 정보를 요청하는 경우
-    return await getBabyProduct(null, lastQuestion); // 마지막 질문에 대해 검색
-  } else {
-    // 새로운 질문으로 처리
-    const result = await getBabyProduct(response);
-    setLastQuestion(response); // 마지막 질문을 현재 질문으로 업데이트
-    return result;
-  }
+export const handleUserResponse = async (response) => {
+  return await getBabyProduct(response);
 };
