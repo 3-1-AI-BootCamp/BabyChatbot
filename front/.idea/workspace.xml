@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c54ecc80-b791-487f-9e0a-b2c6ea5332df" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/constants/strings.js" beforeDir="false" afterPath="$PROJECT_DIR$/constants/strings.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hooks/useChat.js" beforeDir="false" afterPath="$PROJECT_DIR$/hooks/useChat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/apiUtils/babyProduct.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/apiUtils/babyProduct.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pythonServer/questionData/make.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonServer/questionData/make.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/apiUtils/hospitalLocation.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/apiUtils/hospitalLocation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/apiUtils/otherParent.js" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,6 +81,7 @@
       <workItem from="1722841580080" duration="15000" />
       <workItem from="1722929129416" duration="78000" />
       <workItem from="1723012403215" duration="113000" />
+      <workItem from="1723509393118" duration="633000" />
     </task>
     <servers />
   </component>

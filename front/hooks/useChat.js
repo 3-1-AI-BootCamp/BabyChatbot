@@ -78,25 +78,6 @@ const useChat = (navigation) => {
     return { isValid: true, errorMessage: '' };
   };
 
-  const sendBackendRequest = async (question) => {
-    try {
-      console.log('백엔드 요청을 보내는 중이에요...');
-      console.log('host: ', host)
-      const response = await fetch(`http://${host}:8080/api/llm/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ chatSentence: question }),
-      });
-
-      const data = await response.json();
-      console.log('Backend response:', data);
-    } catch (error) {
-      console.error('Error sending backend request:', error);
-    }
-  };
-
   const generateText = async (question = inputMessage) => {
     const message = {
       _id: Math.random().toString(36).substring(7),
@@ -152,6 +133,7 @@ const useChat = (navigation) => {
       }
   
       botMessage._id = Math.random().toString(36).substring(7); // Ensure _id is unique
+      console.log(botMessage);
       setIsTyping(false);
       setMessages((previousMessages) => GiftedChat.append(previousMessages, [botMessage]));
   
