@@ -81,6 +81,11 @@ dependencies {
 	// Jwt용 2
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	// 큰따옴표 안 콤마를 거르기 위한 csv용 라이브러리
+	implementation 'org.apache.commons:commons-csv:1.9.0'
+
+	// 유사도 검색을 위한 의존성
+	implementation 'org.apache.commons:commons-text:1.10.0'
 }
 
 tasks.named('test') {
