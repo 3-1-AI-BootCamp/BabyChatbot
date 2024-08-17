@@ -104,11 +104,11 @@ public class LLMService {
 
 
 
-    public ResponseEntity<String> generatePrompt(String userQuestion, List<Map<String, Object>> q_a_list, String gptRole) {
+    public ResponseEntity<String> generatePrompt(String userQuestion, List<Map<String, Object>> q_a_list) {
         StringBuilder promptBuilder = new StringBuilder();
 
         // 시스템 역할 추가
-        promptBuilder.append(gptRole).append("\n\n");
+        promptBuilder.append(gptRoles).append("\n\n");
 
         // 사용자 질문 추가
         promptBuilder.append("사용자 질문: ").append(userQuestion).append("\n\n");

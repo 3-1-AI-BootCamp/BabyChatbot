@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.model.CommunicationRequest;
 import com.example.model.PerformanceData;
+import com.example.service.DataStorageService;
 import com.example.service.LLMService;
 import com.example.service.PineconeService;
 import com.example.service.TagLabeling;
@@ -23,13 +24,15 @@ public class LLMController {
     private final LLMService gptService;
     private final TagLabeling tagLabeling;
     private final PineconeService pineconeService;
+    private final DataStorageService dataStorageService;
 
 //    gptService, tagLabeling 객체 생성
     @Autowired
-    public LLMController(LLMService gptService, TagLabeling tagLabeling, PineconeService pineconeService) {
+    public LLMController(LLMService gptService, TagLabeling tagLabeling, PineconeService pineconeService, DataStorageService dataStorageService) {
         this.gptService = gptService;
         this.tagLabeling = tagLabeling;
         this.pineconeService = pineconeService;
+        this.dataStorageService = dataStorageService;
     }
 
 
@@ -58,19 +61,19 @@ public class LLMController {
 
 //    q_a_list, namespace, gpt response 다 반환하기 위한 메서드
     @PostMapping("/request")
-    public ResponseEntity<PerformanceData> chatTags(@RequestBody CommunicationRequest request) {
+    public ResponseEntity<PerformanceData> requestAllDataFormat(@RequestBody CommunicationRequest request) {
         long startTime = System.currentTimeMillis();
 
         String userQuestion = request.getChatSentence();
         int topK = request.getTopK();
         float similarity = request.getSimilarity();
-        String gptRole = request.getGptRole();
+//        String gptRole = request.getGptRole();
         String labelTag = tagLabeling.sentenceTagging(userQuestion);
         String mappingNamespace = TagNamespaceMapper.getNamespace(labelTag);
 
         List<Map<String, Object>> qaList = pineconeService.querySimilarQuestions(userQuestion, topK, mappingNamespace, similarity);
 
-        ResponseEntity<String> gptResponseEntity = gptService.generatePrompt(userQuestion, qaList, gptRole);
+        ResponseEntity<String> gptResponseEntity = gptService.generatePrompt(userQuestion, qaList);
         String gptResponse = gptResponseEntity.getBody(); // ResponseEntity에서 실제 응답 추출
 
         long endTime = System.currentTimeMillis();
@@ -88,4 +91,15 @@ public class LLMController {
     }
 
 
+    @PostMapping("/requestDB")
+    public ResponseEntity<PerformanceData> requestDB(@RequestBody CommunicationRequest request) {
+        ResponseEntity<PerformanceData> rsFormat = requestAllDataFormat(request);
+
+        if (rsFormat.getStatusCode().is2xxSuccessful() && rsFormat.getBody() != null) {
+            dataStorageService.storeData(rsFormat.getBody());
+            System.out.println("successfully stored data");
+        }
+
+        return rsFormat;
+    }
 }
