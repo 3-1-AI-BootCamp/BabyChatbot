@@ -116,7 +116,7 @@ const useChat = (navigation) => {
       if (tags.includes('병원')) {
         botMessage = await getHospital(userLocation, question, host, port);
       } else if (tags.includes('아기 용품')) {
-        botMessage = await getBabyProduct(chatHistory, question); // 저장된 대화(chatHistory)를 전달
+        botMessage = await getBabyProduct(question, chatHistory); // 저장된 대화(chatHistory)를 전달
       } else if (tags.includes('육아 의학 상담')) {
         botMessage = await getMedicalInfo(question, host, port);
       } else if (tags.includes('사주') || tags.includes('운세')) {

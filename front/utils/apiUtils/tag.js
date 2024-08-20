@@ -40,5 +40,5 @@
 // };
 
 export const getTag = async (question, host, port) => {
-    return { text: '', tags: ['병원'] };
+    return { text: '', tags: ['아기 용품'] };
 };
