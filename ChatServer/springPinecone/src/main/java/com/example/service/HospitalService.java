@@ -37,92 +37,38 @@ public class HospitalService {
     public void uploadHospitalData() throws Exception {
         MongoDatabase database = mongoClient.getDatabase("hospital");
         MongoCollection<Document> hospitalCollection = database.getCollection("hospitals");
-        MongoCollection<Document> pharmacyCollection = database.getCollection("pharmacies");
 
+        // CSV file containing hospital information
         File hospitalInfoFile = new ClassPathResource("csv_files/병원정보.csv").getFile();
-        File hospitalDetailFile = new ClassPathResource("csv_files/병원세부.csv").getFile();
-        File pharmacyInfoFile = new ClassPathResource("csv_files/약국정보.csv").getFile();
 
-        Map<String, Document> hospitalMap = new HashMap<>();
-
-        // 병원정보 CSV 파일 처리
+        // Reading the CSV file
         try (BufferedReader br = Files.newBufferedReader(Paths.get(hospitalInfoFile.getPath()), StandardCharsets.UTF_8);
              CSVParser csvParser = new CSVParser(br, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
             for (CSVRecord record : csvParser) {
-                String key = record.get(0);
+                // CSV의 임의의 영문 이름 필드 가져오기
+                String hospitalId = record.get("HospitalID");
+                String region = record.get("location");
 
-                Document doc = new Document("암호화요양기호", key)
-                        .append("요양기관명", record.get(1))
-                        .append("종별코드명", record.get(2))
-                        .append("주소", record.get(3))
-                        .append("전화번호", record.get(4))
-                        .append("병원홈페이지", record.get(5).isEmpty() ? null : record.get(5))
-                        .append("총의사수", parseIntOrDefault(record.get(6), 0))
-                        .append("의과일반의", parseIntOrDefault(record.get(7), 0))
-                        .append("의과인턴", parseIntOrDefault(record.get(8), 0))
-                        .append("의과레지던트", parseIntOrDefault(record.get(9), 0))
-                        .append("의과전문의", parseIntOrDefault(record.get(10), 0))
-                        .append("치과일반의", parseIntOrDefault(record.get(11), 0))
-                        .append("치과인턴", parseIntOrDefault(record.get(12), 0))
-                        .append("치과레지던트", parseIntOrDefault(record.get(13), 0))
-                        .append("치과전문의", parseIntOrDefault(record.get(14), 0))
-                        .append("한방일반의", parseIntOrDefault(record.get(15), 0))
-                        .append("한방인턴", parseIntOrDefault(record.get(16), 0))
-                        .append("한방레지던트", parseIntOrDefault(record.get(17), 0))
-                        .append("한방전문의", parseIntOrDefault(record.get(18), 0))
-                        .append("조산사", parseIntOrDefault(record.get(19), 0))
-                        .append("좌표", new Document("X", parseDoubleOrDefault(record.get(20), 0.0))
-                                .append("Y", parseDoubleOrDefault(record.get(21), 0.0)))
-                        .append("진료과목", new ArrayList<String>());
+                // Find the existing document in MongoDB by 암호화요양기호
+                Document existingDoc = hospitalCollection.find(Filters.eq("암호화요양기호", hospitalId)).first();
 
-                hospitalMap.put(key, doc);
-            }
-        }
-
-        // 병원세부 CSV 파일에서 진료과목 데이터를 추가
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(hospitalDetailFile.getPath()), StandardCharsets.UTF_8);
-             CSVParser csvParser = new CSVParser(br, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
-
-            for (CSVRecord record : csvParser) {
-                String key = record.get(0); // 암호화요양기호
-                String subject = record.get(2); // 진료과목
-
-                if (hospitalMap.containsKey(key)) {
-                    Document doc = hospitalMap.get(key);
-                    List<String> subjects = doc.getList("진료과목", String.class);
-
-                    // 기존의 "진료과목" 리스트에 올바른 "진료과목" 값을 추가
-                    if (subjects == null) {
-                        subjects = new ArrayList<>();
-                    }
-                    subjects.add(subject);
-                    doc.put("진료과목", subjects);
+                if (existingDoc != null) {
+                    // Update the document with the new region information
+                    hospitalCollection.updateOne(Filters.eq("암호화요양기호", hospitalId),
+                            new Document("$set", new Document("지역", region)));
+                    logger.info("Updated hospital with ID {}: added region {}", hospitalId, region);
+                } else {
+                    // Document doesn't exist, insert a new one
+                    Document newDoc = new Document("암호화요양기호", hospitalId)
+                            .append("지역", region);
+                    hospitalCollection.insertOne(newDoc);
+                    logger.info("Inserted new hospital with ID {}: added region {}", hospitalId, region);
                 }
             }
         }
-
-        // 병원 데이터를 MongoDB에 삽입
-        for (Document doc : hospitalMap.values()) {
-            hospitalCollection.insertOne(doc);
-        }
-
-        // 약국 CSV 파일 처리 및 MongoDB에 삽입
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(pharmacyInfoFile.getPath()), StandardCharsets.UTF_8);
-             CSVParser csvParser = new CSVParser(br, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
-
-            for (CSVRecord record : csvParser) {
-                Document doc = new Document("암호화요양기호", record.get(0))
-                        .append("약국명", record.get(1))
-                        .append("종별코드명", record.get(2))
-                        .append("주소", record.get(3))
-                        .append("전화번호", record.get(4))
-                        .append("좌표", new Document("X", parseDoubleOrDefault(record.get(5), 0.0))
-                                .append("Y", parseDoubleOrDefault(record.get(6), 0.0)));
-                pharmacyCollection.insertOne(doc);
-            }
-        }
     }
+
 
     // 비어 있거나 잘못된 숫자 값을 처리하는 헬퍼 메서드
     private int parseIntOrDefault(String value, int defaultValue) {
@@ -141,21 +87,28 @@ public class HospitalService {
         }
     }
 
-    public List<Document> searchHospitalsByName(String name) {
-        logger.info("Searching hospitals by name: {}", name);
+    // 요양기관명과 지역을 함께 주며 검색을 요청했을 경우의 함수
+    public List<Document> searchHospitalsByNameAndRegion(String name, String region) {
+        logger.info("Searching hospitals by name: {} in region: {}", name, region);
 
         MongoDatabase database = mongoClient.getDatabase("hospital");
         MongoCollection<Document> hospitalCollection = database.getCollection("hospitals");
 
-        List<Document> allHospitals = hospitalCollection.find().into(new ArrayList<>());
-        List<Document> matchedHospitals = new ArrayList<>();
+        // MongoDB 검색 쿼리 생성
+        List<Document> allHospitals;
+        if (region == null || region.isEmpty()) {
+            allHospitals = hospitalCollection.find().into(new ArrayList<>());
+        } else {
+            allHospitals = hospitalCollection.find(Filters.regex("주소", "^" + region)).into(new ArrayList<>());
+        }
 
+        List<Document> matchedHospitals = new ArrayList<>();
         LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
 
         for (Document hospital : allHospitals) {
             String hospitalName = hospital.getString("요양기관명");
             int distance = levenshteinDistance.apply(name, hospitalName);
-            if (distance <= 2) {  // 거리가 2 이하인 경우 유사한 것으로 간주
+            if (distance <= 2) {
                 matchedHospitals.add(hospital);
             }
         }
@@ -166,7 +119,7 @@ public class HospitalService {
             return Integer.compare(d1, d2);
         });
 
-        logger.info("Found {} hospitals matching name: {}", matchedHospitals.size(), name);
+        logger.info("Found {} hospitals matching name: {} in region: {}", matchedHospitals.size(), name, region);
         return matchedHospitals;
     }
 }

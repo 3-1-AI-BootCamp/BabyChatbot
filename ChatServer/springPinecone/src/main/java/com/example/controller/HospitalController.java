@@ -34,44 +34,25 @@ public class HospitalController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Document> searchHospitalByName(@RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<List<Document>> searchHospitalByNameAndRegion(@RequestBody Map<String, String> requestBody) {
         String name = requestBody.get("요양기관명");
-        List<Document> hospitals = hospitalService.searchHospitalsByName(name);
+        String region = requestBody.get("지역");
+
+        List<Document> hospitals;
+
+        if (region != null && !region.isEmpty()) {
+            hospitals = hospitalService.searchHospitalsByNameAndRegion(name, region);
+        } else if (name != null && !name.isEmpty()) {
+            hospitals = hospitalService.searchHospitalsByNameAndRegion(name, ""); // Search without a specific region
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         if (hospitals.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Document hospital = hospitals.get(0); // 첫 번째 병원만 반환
-
-        // 진료과목을 최대 5개로 제한
-        List<String> limitedSubjects = hospital.getList("진료과목", String.class).stream()
-                .limit(5)
-                .collect(Collectors.toList());
-
-        // 필요한 모든 정보를 반환
-        Document result = new Document("요양기관명", hospital.getString("요양기관명"))
-                .append("종별코드명", hospital.getString("종별코드명"))
-                .append("주소", hospital.getString("주소"))
-                .append("전화번호", hospital.getString("전화번호"))
-                .append("병원홈페이지", hospital.getString("병원홈페이지"))
-                .append("총의사수", hospital.getInteger("총의사수"))
-                .append("의과일반의", hospital.getInteger("의과일반의"))
-                .append("의과인턴", hospital.getInteger("의과인턴"))
-                .append("의과레지던트", hospital.getInteger("의과레지던트"))
-                .append("의과전문의", hospital.getInteger("의과전문의"))
-                .append("치과일반의", hospital.getInteger("치과일반의"))
-                .append("치과인턴", hospital.getInteger("치과인턴"))
-                .append("치과레지던트", hospital.getInteger("치과레지던트"))
-                .append("치과전문의", hospital.getInteger("치과전문의"))
-                .append("한방일반의", hospital.getInteger("한방일반의"))
-                .append("한방인턴", hospital.getInteger("한방인턴"))
-                .append("한방레지던트", hospital.getInteger("한방레지던트"))
-                .append("한방전문의", hospital.getInteger("한방전문의"))
-                .append("조산사", hospital.getInteger("조산사"))
-                .append("좌표", hospital.get("좌표"))
-                .append("진료과목", limitedSubjects);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(hospitals, HttpStatus.OK);
     }
+
 }
