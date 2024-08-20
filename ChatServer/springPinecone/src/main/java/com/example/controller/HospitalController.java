@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -23,19 +22,14 @@ public class HospitalController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<Document>> searchHospitalByNameAndRegion(@RequestBody Map<String, String> requestBody) {
-        String name = requestBody.get("요양기관명");
-        String region = requestBody.get("지역");
+    public ResponseEntity<List<Document>> searchHospitalByNameAndRegion(@RequestBody Map<String, Object> requestBody) {
+        String name = (String) requestBody.get("요양기관명");
+        String region = (String) requestBody.get("지역");
+        Map<String, Double> userLocation = (Map<String, Double>) requestBody.get("사용자위치");
+        double userLat = userLocation.get("위도");
+        double userLon = userLocation.get("경도");
 
-        List<Document> hospitals;
-
-        if (region != null && !region.isEmpty()) {
-            hospitals = hospitalService.searchHospitalsByNameAndRegion(name, region);
-        } else if (name != null && !name.isEmpty()) {
-            hospitals = hospitalService.searchHospitalsByNameAndRegion(name, ""); // Search without a specific region
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        List<Document> hospitals = hospitalService.searchHospitalsByNameAndRegion(name, region, userLat, userLon);
 
         if (hospitals.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

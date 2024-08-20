@@ -7,21 +7,22 @@ export const extractLocationAndHospital = (question) => {
   
     // 지역 추출
     for (let loc of locations) {
-      if (question.includes(loc)) {
-        location = loc;
-        break;
-      }
+        if (question.includes(loc)) {
+            location = loc;
+            question = question.replace(loc, '').trim();  // 지역을 질문에서 제거
+            break;
+        }
     }
   
     // 병원 이름 추출
     const hospitalMatch = question.match(/([가-힣\s]+(?:병원|의원|의료원|치과|보건진료소|보건지소))/);
     if (hospitalMatch) {
-      hospitalName = hospitalMatch[0];
+        hospitalName = hospitalMatch[0].trim();
     }
   
     return { location, hospitalName };
-  };
-  
+};
+
 
 export const getNearbyHospitals = async (userLocation, hospitalType) => {
     const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userLocation.latitude},${userLocation.longitude}&radius=5000&type=hospital&keyword=${encodeURIComponent(hospitalType)}&key=${GOOGLE_MAPS_API_KEY}`;

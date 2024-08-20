@@ -12,8 +12,14 @@ export const handleDirectionsRequest = async (question, userLocation) => {
   
       const requestBody = {
         요양기관명: hospitalName,
+        사용자위치: {
+          위도: userLocation.latitude,
+          경도: userLocation.longitude,
+        },
       };
       if (location) requestBody["지역"] = location;
+
+      console.log('Request Body:', requestBody);
   
       const searchUrl = `http://${host}:${port}/api/search`;
       const searchResponse = await fetch(searchUrl, {

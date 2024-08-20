@@ -7,19 +7,10 @@ import com.mongodb.client.model.Filters;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -34,14 +25,24 @@ public class HospitalService {
         this.mongoClient = mongoClient;
     }
 
-    // 요양기관명과 지역을 함께 주며 검색을 요청했을 경우의 함수
-    public List<Document> searchHospitalsByNameAndRegion(String name, String region) {
+    // Haversine 공식을 사용하여 두 지점 간의 거리를 계산하는 함수
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // 지구 반경 (킬로미터)
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // 킬로미터 단위로 반환
+    }
+
+    public List<Document> searchHospitalsByNameAndRegion(String name, String region, double userLat, double userLon) {
         logger.info("Searching hospitals by name: {} in region: {}", name, region);
 
         MongoDatabase database = mongoClient.getDatabase("hospital");
         MongoCollection<Document> hospitalCollection = database.getCollection("hospitals");
 
-        // MongoDB 검색 쿼리 생성
         List<Document> allHospitals;
         if (region == null || region.isEmpty()) {
             allHospitals = hospitalCollection.find().into(new ArrayList<>());
@@ -60,13 +61,22 @@ public class HospitalService {
             }
         }
 
-        matchedHospitals.sort((h1, h2) -> {
-            int d1 = levenshteinDistance.apply(name, h1.getString("요양기관명"));
-            int d2 = levenshteinDistance.apply(name, h2.getString("요양기관명"));
-            return Integer.compare(d1, d2);
-        });
+        // 가장 가까운 병원 찾기
+        Document closestHospital = null;
+        double minDistance = Double.MAX_VALUE;
 
-        logger.info("Found {} hospitals matching name: {} in region: {}", matchedHospitals.size(), name, region);
-        return matchedHospitals;
+        for (Document hospital : matchedHospitals) {
+            double hospitalLat = hospital.get("좌표", Document.class).getDouble("Y");
+            double hospitalLon = hospital.get("좌표", Document.class).getDouble("X");
+            double distance = calculateDistance(userLat, userLon, hospitalLat, hospitalLon);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestHospital = hospital;
+            }
+        }
+
+        logger.info("Found closest hospital: {}", closestHospital);
+        return closestHospital != null ? Collections.singletonList(closestHospital) : Collections.emptyList();
     }
 }
