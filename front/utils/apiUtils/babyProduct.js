@@ -86,7 +86,7 @@ export const getBabyProduct = async (question) => {
 
     let result;
     if (intent.isNotBabyProduct) {
-      result = createErrorResponse("죄송합니다. 아기 용품과 관련된 질문만 답변할 수 있어요.");
+      result = createErrorResponse("죄송합니다. 아기 용품을 찾는 질문만 답변할 수 있어요.");
     } else if (intent.isBabyProductButNotInList) {
       // 카테고리에 없지만 아기용품으로 판단된 경우
       result = await searchProduct(intent.keyword, intent.additionalKeywords, intent.attributes, intent.priceRange);
@@ -281,7 +281,7 @@ async function searchProduct(keyword, additionalKeywords, attributes, priceRange
 
       const attributesText = attributes && attributes.length > 0 ? ` (${attributes.join(', ')})` : '';
       const additionalKeywordsText = additionalKeywords && additionalKeywords.length > 0 ? ` ${additionalKeywords.join(' ')}` : '';
-      const responseText = `"${keyword}${additionalKeywordsText}"에 관련된 제품들입니다:\n\n${products}`;
+      const responseText = `"${keyword}${attributesText}"에 관련된 제품들입니다:\n\n${products}`;
 
       console.log("[searchProduct] Response:", responseText);
 
