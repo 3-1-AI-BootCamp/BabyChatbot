@@ -44,7 +44,8 @@ ${generateBasePrompt(question, allKeywords)}
   "priceRange": {
     "min": number | null,
     "max": number | null
-  }
+  },
+  "isBabyProductButNotInList": boolean
 }
 
 - needsClarification: 사용자의 질문이 모호하여 추가 설명이 필요한 경우 true
@@ -52,6 +53,9 @@ ${generateBasePrompt(question, allKeywords)}
 - additionalKeywords: 주요 키워드와 함께 검색에 포함할 추가 키워드들. 최대 2개까지 포함할 수 있습니다. 이는 키워드 목록에 없는 단어일 수 있습니다.
 - isNotBabyProduct: 질문이 아기 용품과 전혀 관련이 없는 경우에만 true로 설정하세요.
 - priceRange: 사용자가 언급한 가격 범위. 만원 단위로 해석합니다. 예를 들어, "3만원대"는 min: 30000, max: 39999로 설정합니다.
+- isNotBabyProduct: 질문이 아기 용품과 전혀 관련이 없는 경우에만 true로 설정하세요.
+- isBabyProductButNotInList: 질문이 아기 용품과 관련이 있지만, 주어진 키워드 목록에 없는 경우 true로 설정하세요.
+
 
 주의사항:
 1. keyword는 가능한 한 위의 키워드 목록에 있는 것을 선택하되, 정확히 일치하지 않더라도 가장 연관성 있는 키워드를 선택하세요.
@@ -61,6 +65,9 @@ ${generateBasePrompt(question, allKeywords)}
 5. 간접적인 표현(예: "하늘에 빙글빙글 도는 것")에 대해서도 적절한 키워드(예: "모빌")를 선택하세요.
 6. "장난감"이 언급된 경우, keyword를 "장난감"으로 설정하고 다른 관련 단어들을 additionalKeywords에 포함시키세요.
 7. 모호한 질문의 경우에도 가능한 한 관련된 키워드를 추측하여 제공하세요. needsClarification이 true인 경우에도 가장 적절해 보이는 키워드를 선택하세요.
+8. 키워드가 주어진 목록에 없더라도, 질문이 아기 용품과 관련이 있다고 판단되면 isNotBabyProduct는 false로, isBabyProductButNotInList는 true로 설정하세요.
+9. 아기체온계, 손소독제 등과 같이 목록에 없지만 아기와 관련될 수 있는 제품도 아기 용품으로 간주하세요.
+
 
 사용자의 질문을 분석하고 위의 지침에 따라 JSON 형식으로만 응답해주세요.
 `;
@@ -80,6 +87,9 @@ export const getBabyProduct = async (question) => {
     let result;
     if (intent.isNotBabyProduct) {
       result = createErrorResponse("죄송합니다. 아기 용품과 관련된 질문만 답변할 수 있어요.");
+    } else if (intent.isBabyProductButNotInList) {
+      // 카테고리에 없지만 아기용품으로 판단된 경우
+      result = await searchProduct(intent.keyword, intent.additionalKeywords, intent.attributes, intent.priceRange);
     } else if (intent.needsClarification) {
       const suggestedKeyword = intent.keyword || intent.additionalKeywords[0] || "아기 용품";
       result = createResponse(`"${suggestedKeyword}"에 대해 물어보시는 건가요? 조금 더 구체적으로 말씀해 주시겠어요?`);
@@ -210,12 +220,21 @@ async function analyzeIntent(question) {
   }
 }
 
-async function searchProduct(keyword, additionalKeywords, attributes, priceRange) {
-  console.log("searchProduct called with:", { keyword, additionalKeywords, attributes, priceRange });
+async function searchProduct(keyword, additionalKeywords, attributes, priceRange, isBabyProductButNotInList) {
+  console.log("searchProduct called with:", { keyword, additionalKeywords, attributes, priceRange, isBabyProductButNotInList });
   try {
     const searchTerms = [keyword, ...additionalKeywords, ...attributes].filter(Boolean);
-    const query = encodeURIComponent(searchTerms.join(' '));
+    
+    let query;
+    if (isBabyProductButNotInList) {
+      query = encodeURIComponent(`아기 ${keyword} ${additionalKeywords.join(' ')}`);
+    } else {
+      query = encodeURIComponent(searchTerms.join(' '));
+    }
     const url = `https://openapi.naver.com/v1/search/shop.json?query=${query}&display=100`;
+
+
+    
 
     const response = await fetch(url, {
       method: 'GET',
