@@ -1,6 +1,32 @@
-node_modules
-.env
-pythonServer/questionData
-ChatServer/springPinecone/src/resources/application.properties
-ChatServer/
-front/constants/badwords.js
+# Ignore all files in the FastAPI models directory
+server/FastApiServer/models/*
+
+# But don't ignore the models directory itself (optional)
+!server/FastApiServer/models/.gitkeep
+
+# Ignore Spring Boot application.properties
+server/SpringbootServer/src/main/resources/application.properties
+
+# General ignores
+.DS_Store
+Thumbs.db
+
+# Python ignores
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Java ignores
+*.class
+*.jar
+*.war
+
+# IDE ignores
+.idea/
+.vscode/
+*.iml
+
+# Build ignores
+target/
+build/
+dist/
