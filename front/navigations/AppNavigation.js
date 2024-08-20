@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Welcome, Login, Register, Home, Chat } from '../screens'
+import { Welcome, Login, Register, Home, Chat, Profile, Saved, Fun, HospitalMapScreen, FAQ } from '../screens'
 import { NavigationContainer } from '@react-navigation/native'
 import BottomTabNavigation from './BottomTabNavigation'
 
@@ -31,6 +31,27 @@ const AppNavigation = () => {
                     }}
                 />
                 <Stack.Screen
+                    name="Saved"
+                    component={Saved}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="Profile"
+                    component={Profile}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="Home"
+                    component={Home}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
                     name="BottomTabNavigation"
                     component={BottomTabNavigation}
                     options={{
@@ -40,6 +61,27 @@ const AppNavigation = () => {
                 <Stack.Screen
                     name="Chat"
                     component={Chat}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="Fun"
+                    component={Fun}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="HospitalMapScreen"
+                    component={HospitalMapScreen}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="FAQ"
+                    component={FAQ}
                     options={{
                         headerShown: false,
                     }}

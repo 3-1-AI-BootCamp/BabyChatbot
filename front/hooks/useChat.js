@@ -1,0 +1,186 @@
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUserLocation } from '../utils/locationUtils';
+import { getHospital, getMedicalInfo, getBabyProduct, getFortune, getTag, getInfo } from '../utils/apiUtils';
+import { GiftedChat } from 'react-native-gifted-chat';
+import { exampleQuestions, badwords } from '../constants';
+import { host, port } from '@env';
+
+const useChat = (navigation) => {
+  const [inputMessage, setInputMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
+  const [chatHistory, setChatHistory] = useState('');
+  const [lastQuestion, setLastQuestion] = useState(null);
+  const [lastProductInfo, setLastProductInfo] = useState(null);
+
+  useEffect(() => {
+    if (exampleQuestions && Array.isArray(exampleQuestions)) {
+      const initialMessages = [
+        {
+          _id: 1,
+          text: '안녕하세요! 저는 육아에 대한 질문에 답변을 드리는 AI 어시스턴트입니다. 예시 질문 중 하나를 선택하거나 직접 질문을 입력해주세요.',
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        },
+        ...exampleQuestions.map((question, index) => ({
+          _id: index + 2,
+          text: question,
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+          quickReply: true,
+        })),
+      ];
+      setMessages(initialMessages);
+    } else {
+      console.error('exampleQuestions 배열을 불러오지 못했습니다.');
+    }
+    initializeLocation();
+  }, []);
+
+  const saveChatHistory = async () => {
+    try {
+      const chatHistory = JSON.stringify(messages);
+      const timestamp = new Date().toISOString();
+      const key = `chat_${timestamp}`;
+      await AsyncStorage.setItem(key, chatHistory);
+      console.log('Chat history saved successfully with key:', key);
+    } catch (error) {
+      console.error('Error saving chat history:', error);
+    }
+  };
+
+  const endChat = () => {
+    saveChatHistory();
+    navigation.goBack();
+  };
+
+  const initializeLocation = async () => {
+    const location = await getUserLocation();
+    setUserLocation(location);
+  };
+
+  const performFirstFilter = (input) => {
+    if (input.trim() === '') {
+      return { isValid: false, errorMessage: '질문을 입력해주세요.' };
+    }
+
+    if (input.length > 150) {
+      return { isValid: false, errorMessage: '질문은 150자 이하로 입력해주세요.' };
+    }
+
+    const containsInappropriateWord = badwords.some(word => input.includes(word));
+    if (containsInappropriateWord) {
+      return { isValid: false, errorMessage: '부적절한 언어가 포함되어 있습니다. 다시 입력해주세요.' };
+    }
+
+    return { isValid: true, errorMessage: '' };
+  };
+
+  const sendBackendRequest = async (question) => {
+    try {
+      console.log('백엔드 요청을 보내는 중이에요...');
+      console.log('host: ', host)
+      const response = await fetch(`http://${host}:8080/api/llm/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatSentence: question }),
+      });
+
+      const data = await response.json();
+      console.log('Backend response:', data);
+    } catch (error) {
+      console.error('Error sending backend request:', error);
+    }
+  };
+
+  const generateText = async (question = inputMessage) => {
+    const message = {
+      _id: Math.random().toString(36).substring(7),
+      text: question,
+      createdAt: new Date(),
+      user: { _id: 1 },
+    };
+  
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, [message]));
+    setLastQuestion(question);
+  
+    const filterResult = performFirstFilter(question);
+    if (!filterResult.isValid) {
+      console.log("1차 필터링 실패");
+      const errorMsg = {
+        _id: Math.random().toString(36).substring(7),
+        text: filterResult.errorMessage,
+        createdAt: new Date(),
+        user: { _id: 2, name: 'ChatGPT' }, // 오류 메시지에 user 설정
+      };
+      setMessages((previousMessages) => GiftedChat.append(previousMessages, [errorMsg]));
+      setInputMessage('');
+      return;
+    }
+  
+    // 백엔드에서 태그보다 우선 수행할 Vector Search 요청을 보내는 함수
+    //await sendBackendRequest(question);
+    setIsTyping(true);
+  
+    try {
+      const { tags } = await getTag(question, host, port);
+      let botMessage;
+  
+      console.log('Tags:', tags);
+  
+      if (tags.includes('병원')) {
+        botMessage = await getHospital(userLocation, question, host, port);
+      } else if (tags.includes('아기 용품')) {
+        botMessage = await getBabyProduct(question, chatHistory); // 저장된 대화(chatHistory)를 전달
+      } else if (tags.includes('육아 의학 상담')) {
+        botMessage = await getMedicalInfo(question, host, port);
+      } else if (tags.includes('사주') || tags.includes('운세')) {
+        botMessage = await getFortune(tags.includes('사주') ? '사주' : '운세');
+      } else if (tags.includes('육아 보조금') || tags.includes('예방 접종')) {
+        botMessage = await getInfo(tags.includes('육아 보조금') ? 'support' : 'vaccination');
+      } else {
+        botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: "죄송합니다. 해당 질문에 대한 정보를 찾을 수 없습니다.",
+          createdAt: new Date(),
+          user: { _id: 2, name: 'ChatGPT' },
+        };
+      }
+  
+      botMessage._id = Math.random().toString(36).substring(7); // Ensure _id is unique
+      setIsTyping(false);
+      setMessages((previousMessages) => GiftedChat.append(previousMessages, [botMessage]));
+  
+      // 이전 대화 내역 업데이트
+      setChatHistory(prevHistory => `${prevHistory}\n사용자: ${question}\nChatGPT: ${botMessage.text}`);
+  
+      saveChatHistory();
+    } catch (error) {
+      console.error("Error generating response:", error);
+      setIsTyping(false);
+      const errorMessage = {
+        _id: Math.random().toString(36).substring(7),
+        text: "죄송합니다. 응답을 생성하는 중 오류가 발생했습니다.",
+        createdAt: new Date(),
+        user: { _id: 2, name: 'ChatGPT' },
+      };
+      setMessages((previousMessages) => GiftedChat.append(previousMessages, [errorMessage]));
+    }
+    setInputMessage('');
+  };
+
+  return {
+    inputMessage,
+    setInputMessage,
+    isTyping,
+    messages,
+    generateText,
+    endChat,
+  };
+};
+
+export default useChat;

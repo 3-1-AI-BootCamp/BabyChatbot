@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "ChatGPT",
-    "slug": "ChatGPT",
+    "name": "babyChat",
+    "slug": "babyChat",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/appicon.jpg",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -18,8 +18,9 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sunmoon.babyChat",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/appicon.jpg",
         "backgroundColor": "#ffffff"
       }
     },

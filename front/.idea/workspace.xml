@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="c54ecc80-b791-487f-9e0a-b2c6ea5332df" name="변경" comment="" />
+    <list default="true" id="c54ecc80-b791-487f-9e0a-b2c6ea5332df" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/hooks/useChat.js" beforeDir="false" afterPath="$PROJECT_DIR$/hooks/useChat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/apiUtils/babyProduct.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/apiUtils/babyProduct.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pythonServer/questionData/make.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../pythonServer/questionData/make.ipynb" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,15 +42,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/admin/Desktop/finalProject",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;JHY&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/admin/Desktop/finalProject&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -64,6 +76,9 @@
       <workItem from="1721277331248" duration="2000" />
       <workItem from="1721277378985" duration="9000" />
       <workItem from="1722302481098" duration="124000" />
+      <workItem from="1722841580080" duration="15000" />
+      <workItem from="1722929129416" duration="78000" />
+      <workItem from="1723012403215" duration="113000" />
     </task>
     <servers />
   </component>
