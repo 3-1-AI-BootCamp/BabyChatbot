@@ -22,17 +22,6 @@ public class HospitalController {
         this.hospitalService = hospitalService;
     }
 
-    @GetMapping("/upload")
-    public String uploadData() {
-        try {
-            hospitalService.uploadHospitalData();
-            return "Data uploaded successfully!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to upload data: " + e.getMessage();
-        }
-    }
-
     @PostMapping("/search")
     public ResponseEntity<List<Document>> searchHospitalByNameAndRegion(@RequestBody Map<String, String> requestBody) {
         String name = requestBody.get("요양기관명");
