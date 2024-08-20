@@ -1,30 +1,54 @@
 import { GOOGLE_MAPS_API_KEY, API_KEY } from '@env';
 
-export const extractLocationAndHospital = (question) => {
-    const locations = ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
-    let location = null;
-    let hospitalName = null;
+export const extractLocationAndHospital = async (question) => {
   
-    // 지역 추출
-    for (let loc of locations) {
-        if (question.includes(loc)) {
-            location = loc;
-            question = question.replace(loc, '').trim();  // 지역을 질문에서 제거
-            break;
-        }
+    const prompt = `
+    해당 질문에서 지역과 병원이름을 추출하세요.
+    지역은 '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'중 하나입니다.
+    병원이름은 실제 병원 이름입니다. 예를 들어 '서울대학교병원'입니다. '정형외과'는 병원이름이 아닙니다.
+    답변 형식은 아래와 같이 주세요.
+    {
+      location: string,
+      hospitalName: string
     }
+    큰 따옴표를 붙이지 마세요.
+    만일 질문의 지역에서 오타가 있으면 수정해서 주세요.
+    만일 값에서 지역이나 병원 이름을 찾을 수 없다면 null로 설정하세요.
+    `;
   
-    // 병원 이름 추출
-    const hospitalMatch = question.match(/([가-힣\s]+(?:병원|의원|의료원|치과|보건진료소|보건지소))/);
-    if (hospitalMatch) {
-        hospitalName = hospitalMatch[0].trim();
-    }
+    // 프롬프트 선택에 따라 GPT 응답을 조합
+    let finalPrompt = prompt;
+  
+    // OpenAI API 호출
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: finalPrompt },
+          { role: 'user', content: question },
+        ],
+      }),
+    });
+  
+    const responseData = await response.json();
+    const gptMessage = responseData.choices[0].message.content;
+
+    console.log("gptMessage: ", gptMessage);
+
+    let location = gptMessage.split('location:')[1].split(',')[0].trim();
+    let hospitalName = gptMessage.split('hospitalName:')[1].trim();
   
     return { location, hospitalName };
 };
 
 
-export const getNearbyHospitals = async (userLocation, hospitalType) => {
+export const getNearbyHospitals = async (userLocation, hospitalType = '병원') => {
+  console.log("히히");
     const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userLocation.latitude},${userLocation.longitude}&radius=5000&type=hospital&keyword=${encodeURIComponent(hospitalType)}&key=${GOOGLE_MAPS_API_KEY}`;
     const placesResponse = await fetch(placesUrl);
     const placesData = await placesResponse.json();

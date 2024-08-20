@@ -133,7 +133,7 @@ const useChat = (navigation) => {
       }
   
       botMessage._id = Math.random().toString(36).substring(7); // Ensure _id is unique
-      console.log(botMessage);
+      console.log("BotMessage: ", botMessage);
       setIsTyping(false);
       setMessages((previousMessages) => GiftedChat.append(previousMessages, [botMessage]));
   
