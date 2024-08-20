@@ -1,9 +1,9 @@
-import * as Location from 'expo-location';
 import { Linking } from 'react-native';
 
-export const openMap = async (start, end, destinationName) => {
-  const url = `https://www.google.com/maps/dir/?api=1&origin=${start.latitude},${start.longitude}&destination=${encodeURIComponent(destinationName)}&travelmode=driving`;
-  
+export const openMap = async (url) => {
+  // URL 생성
+  console.log('Generated Map URL:', url);
+
   const supported = await Linking.canOpenURL(url);
 
   if (supported) {
