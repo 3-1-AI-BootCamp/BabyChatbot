@@ -25,11 +25,11 @@ const initialState = {
   formIsValid: false,
 };
 
+// 로그인 화면
 const Login = ({ navigation }) => {
   const [formState, dispatchFormState] = useReducer(reducer, initialState);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { colors } = useTheme();
 
   const inputChangedHandler = useCallback(
     (inputId, inputValue) => {
@@ -39,10 +39,12 @@ const Login = ({ navigation }) => {
     [dispatchFormState]
   );
 
+  // 로그인 시도
   const loginHandler = async () => {
     setIsLoading(true);
     setError(null);
 
+    // 입력 정보를 백엔드로 보내서 로그인 요청
     try {
       const response = await fetch(`http://${host}:${port}/api/auth/login`, {
         method: 'POST',
@@ -57,6 +59,7 @@ const Login = ({ navigation }) => {
 
       const data = await response.json();
 
+      // 입력 정보가 일치하지 않을 경우 로그인 실패
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');
       }
@@ -67,7 +70,7 @@ const Login = ({ navigation }) => {
       // 사용자 데이터를 AsyncStorage에 저장
       await AsyncStorage.setItem('user', JSON.stringify(data));
 
-      // 홈 화면으로 이동
+      // 홈 화면으로 이동(로그인 성공 시 토큰 부여 등은 구현되어 있지 않음)
       navigation.navigate('Home');
     } catch (error) {
       setError(error.message || 'Something went wrong');

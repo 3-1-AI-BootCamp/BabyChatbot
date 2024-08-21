@@ -9,6 +9,7 @@ const wp = (percentage) => (width * percentage) / 100;
 const hp = (percentage) => (height * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
+// 홈 화면
 const Home = ({ navigation }) => {
   const { colors } = useTheme();
 
@@ -58,7 +59,7 @@ const Home = ({ navigation }) => {
       <View style={styles.bottomSection}>
         <View style={styles.startChatContainer}>
           <Pressable style={styles.startChatButton} onPress={() => navigation.navigate('Chat')}>
-            <Text style={styles.startChatText}>Start Chat</Text>
+            <Text style={styles.startChatText}>채팅 시작</Text>
           </Pressable>
         </View>
       </View>

@@ -2,6 +2,7 @@ import { Dimensions } from 'react-native'
 const { height, width } = Dimensions.get('window')
 import { FontFamily } from './Globalstyles'
 
+// 테마
 export const COLORS = {
     //primary: '#10A37F',
     primary: '#A7C7E7',

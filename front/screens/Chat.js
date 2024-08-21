@@ -10,6 +10,7 @@ import MessageBubble from '../components/MessageBubble';
 import useChat from '../hooks/useChat';
 import { COLORS } from '../constants';
 
+// 채팅 화면
 const Chat = ({ navigation, route }) => {
   const {
     inputMessage,

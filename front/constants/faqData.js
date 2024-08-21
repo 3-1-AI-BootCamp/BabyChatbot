@@ -1,3 +1,4 @@
+// 예방 접종 관련 정보 제공용 데이터
 export const vaccinationData = [
     { name: "BCG(피내용)", count: "1회", timing: "생후 4주 이내", note: "" },
     { name: "B형간염", count: "3회", timing: "생후 0, 1, 6개월", note: "임산부가 HBsAg 양성인 경우 출생 후 12시간 이내 HBIG과 동시 접종" },

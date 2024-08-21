@@ -7,6 +7,7 @@ import { StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { MaterialIcons } from '@expo/vector-icons';
+import { images } from '../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -14,6 +15,7 @@ const wp = (percentage) => (width * percentage) / 100;
 const hp = (percentage) => (height * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
+// 근처 병원 찾기 화면
 const HospitalMapScreen = () => {
     const { colors } = useTheme();
     const navigation = useNavigation();
@@ -27,14 +29,17 @@ const HospitalMapScreen = () => {
         getCurrentLocation();
     }, []);
 
+    // 현재 위치를 가져오는 함수
     const getCurrentLocation = async () => {
         try {
+            // 위치 접근 권한 요청
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Permission denied', 'Permission to access location was denied');
                 return;
             }
 
+            // 현재 위치 정보 가져오기
             let location = await Location.getCurrentPositionAsync({});
             const { latitude, longitude } = location.coords;
             const newRegion = {
@@ -43,7 +48,11 @@ const HospitalMapScreen = () => {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             };
+
+            // 지역 상태 업데이트
             setRegion(newRegion);
+
+            // 병원 정보 가져오기
             fetchHospitals(latitude, longitude);
         } catch (error) {
             console.error('Error getting current location:', error);
@@ -51,8 +60,10 @@ const HospitalMapScreen = () => {
         }
     };
 
+    // 특정 위치 주변 병원을 가져오는 함수
     const fetchHospitals = async (latitude, longitude) => {
         try {
+            // 병원 정보를 Google Places API로부터 가져옴
             console.log('Fetching hospitals...');
             const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=10000&type=hospital&keyword=소아과&language=ko&key=${GOOGLE_MAPS_API_KEY}`;
             console.log('API URL:', url);
@@ -82,7 +93,10 @@ const HospitalMapScreen = () => {
 
             console.log('Filtered Hospitals:', filteredHospitals.length);
 
+            // 병원 정보를 상태로 저장
             setHospitals(filteredHospitals);
+
+            // 상위 3개 병원 표시
             setNearbyHospitals(filteredHospitals.slice(0, 3));
         } catch (error) {
             console.error('Error fetching hospital data:', error);
@@ -90,6 +104,7 @@ const HospitalMapScreen = () => {
         }
     };
 
+    // 특정 병원의 세부 정보를 가져오는 함수
     const getHospitalDetails = async (placeId) => {
         try {
             const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,formatted_phone_number,opening_hours,geometry,vicinity&language=ko&key=${GOOGLE_MAPS_API_KEY}`;
@@ -102,6 +117,7 @@ const HospitalMapScreen = () => {
         }
     };
 
+    // 현재 지도 영역 내 병원을 검색하는 함수
     const searchNearbyHospitals = async () => {
         if (!region) {
           Alert.alert('알림', '지도 영역을 찾을 수 없습니다.');
@@ -136,6 +152,8 @@ const HospitalMapScreen = () => {
           );
       
           setHospitals(filteredHospitals);
+          
+          // 상위 3개 병원 표시
           setNearbyHospitals(filteredHospitals.slice(0, 3));
       
           if (filteredHospitals.length === 0) {
@@ -148,6 +166,8 @@ const HospitalMapScreen = () => {
           setIsLoading(false);
         }
       };
+
+    //현재 위치로 지도를 이동시키는 함수
     const moveToCurrentLocation = async () => {
         try {
           let { status } = await Location.requestForegroundPermissionsAsync();
@@ -167,6 +187,7 @@ const HospitalMapScreen = () => {
       
           setRegion(newRegion);
           
+          // 지도 이동 애니메이션
           if (mapRef.current) {
             mapRef.current.animateToRegion(newRegion, 1000);
           } else {
@@ -200,13 +221,13 @@ const HospitalMapScreen = () => {
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
                     <Image
                         style={styles.headerIcon}
-                        source={require('../assets/images/back.png')}
+                        source={images.back}
                     />
                 </TouchableOpacity>
                 <View style={styles.iconContainer}>
                     <Image
                         style={styles.icon}
-                        source={require('../assets/images/icon.jpg')}
+                        source={images.icon}
                     />
                 </View>
                 <View style={styles.headerButton} />

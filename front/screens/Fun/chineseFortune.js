@@ -5,6 +5,7 @@ const { width, height } = Dimensions.get('window');
 const wp = (percentage) => (width * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
+// 십이지 운세 처리
 const ChineseFortune = ({ userData, host, port }) => {
     const [fortune, setFortune] = useState('');
 
@@ -12,6 +13,7 @@ const ChineseFortune = ({ userData, host, port }) => {
         fetchFortune();
     }, []);
 
+    // 생년월일을 통해 십이지를 구함
     const getChineseZodiac = (birthDate) => {
         const year = new Date(birthDate).getFullYear();
         const zodiacs = [
@@ -21,6 +23,7 @@ const ChineseFortune = ({ userData, host, port }) => {
         return zodiacs[(year - 4) % 12];
     };
 
+    // 이름, 성별, 생년월일, 십이지 정보를 통해 십이지 운세 맡기는 함수
     const fetchFortune = async () => {
         try {
             const chineseZodiac = getChineseZodiac(userData.birthDate);

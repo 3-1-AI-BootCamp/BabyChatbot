@@ -7,6 +7,7 @@ import { COLORS, FONTS, SIZES, images, FontFamily } from '../constants';
 import PageContainer from '../components/PageContainer';
 import Button from '../components/Button';
 
+// 초기 화면
 const Welcome = ({ navigation }) => {
   const { colors } = useTheme();
 

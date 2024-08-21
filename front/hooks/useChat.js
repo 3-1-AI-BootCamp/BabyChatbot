@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserLocation } from '../utils/locationUtils';
-import { getHospital, getMedicalInfo, getBabyProduct, getFortune, getTag, getInfo } from '../utils/apiUtils';
+import { getHospital, getMedicalInfo, getBabyProduct, getTag } from '../utils/apiUtils';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { exampleQuestions, badwords } from '../constants';
 import { host, port } from '@env';
 
+// 사용자 대화 챗 관리
 const useChat = (navigation) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
-  const [chatHistory, setChatHistory] = useState('');
-  const [lastQuestion, setLastQuestion] = useState(null);
-  const [lastProductInfo, setLastProductInfo] = useState(null);
 
   useEffect(() => {
     if (exampleQuestions && Array.isArray(exampleQuestions)) {
+      // 기본 메시지 설정
       const initialMessages = [
         {
           _id: 1,
@@ -24,6 +23,7 @@ const useChat = (navigation) => {
           createdAt: new Date(),
           user: { _id: 2, name: 'ChatGPT' },
         },
+        // 예시 질문 리스트
         ...exampleQuestions.map((question, index) => ({
           _id: index + 2,
           text: question,
@@ -32,6 +32,7 @@ const useChat = (navigation) => {
           quickReply: true,
         })),
       ];
+      // 메시지 업데이트
       setMessages(initialMessages);
     } else {
       console.error('exampleQuestions 배열을 불러오지 못했습니다.');
@@ -39,6 +40,7 @@ const useChat = (navigation) => {
     initializeLocation();
   }, []);
 
+  // 채팅 히스토리에 저장
   const saveChatHistory = async () => {
     try {
       const chatHistory = JSON.stringify(messages);
@@ -51,16 +53,19 @@ const useChat = (navigation) => {
     }
   };
 
+  // 대화 종료 시 실행
   const endChat = () => {
     saveChatHistory();
     navigation.goBack();
   };
 
+  // 현재 위치 받아오고 업데이트
   const initializeLocation = async () => {
     const location = await getUserLocation();
     setUserLocation(location);
   };
 
+  // 1차 필터링 함수(욕설, 빈값, 너무 긴 값을 필터링)
   const performFirstFilter = (input) => {
     if (input.trim() === '') {
       return { isValid: false, errorMessage: '질문을 입력해주세요.' };
@@ -78,25 +83,7 @@ const useChat = (navigation) => {
     return { isValid: true, errorMessage: '' };
   };
 
-  const sendBackendRequest = async (question) => {
-    try {
-      console.log('백엔드 요청을 보내는 중이에요...');
-      console.log('host: ', host)
-      const response = await fetch(`http://${host}:8080/api/llm/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ chatSentence: question }),
-      });
-
-      const data = await response.json();
-      console.log('Backend response:', data);
-    } catch (error) {
-      console.error('Error sending backend request:', error);
-    }
-  };
-
+  // 텍스트 처리 함수
   const generateText = async (question = inputMessage) => {
     const message = {
       _id: Math.random().toString(36).substring(7),
@@ -106,8 +93,8 @@ const useChat = (navigation) => {
     };
   
     setMessages((previousMessages) => GiftedChat.append(previousMessages, [message]));
-    setLastQuestion(question);
   
+    // 1차 필터링에서 걸렸을 경우 대답 종료
     const filterResult = performFirstFilter(question);
     if (!filterResult.isValid) {
       console.log("1차 필터링 실패");
@@ -122,27 +109,25 @@ const useChat = (navigation) => {
       return;
     }
   
-    // 백엔드에서 태그보다 우선 수행할 Vector Search 요청을 보내는 함수
-    //await sendBackendRequest(question);
+    // 타이핑 중 상태로 변경
     setIsTyping(true);
   
+    // 각 태그 별 처리
     try {
+      // 태그 분류 모델을 통해 대화에서 태그 분류
       const { tags } = await getTag(question, host, port);
-      let botMessage;
-  
       console.log('Tags:', tags);
   
+      let botMessage;
+
+      // 3개의 태그와 기타 태그 별 처리
       if (tags.includes('병원')) {
         botMessage = await getHospital(userLocation, question, host, port);
       } else if (tags.includes('아기 용품')) {
-        botMessage = await getBabyProduct(question, chatHistory); // 저장된 대화(chatHistory)를 전달
+        botMessage = await getBabyProduct(question);
       } else if (tags.includes('육아 의학 상담')) {
         botMessage = await getMedicalInfo(question, host, port);
-      } else if (tags.includes('사주') || tags.includes('운세')) {
-        botMessage = await getFortune(tags.includes('사주') ? '사주' : '운세');
-      } else if (tags.includes('육아 보조금') || tags.includes('예방 접종')) {
-        botMessage = await getInfo(tags.includes('육아 보조금') ? 'support' : 'vaccination');
-      } else {
+      } else { // 태그가 "기타" 일 경우 이쪽으로 빠짐
         botMessage = {
           _id: Math.random().toString(36).substring(7),
           text: "죄송합니다. 해당 질문에 대한 정보를 찾을 수 없습니다.",
@@ -151,15 +136,19 @@ const useChat = (navigation) => {
         };
       }
   
-      botMessage._id = Math.random().toString(36).substring(7); // Ensure _id is unique
+      botMessage._id = Math.random().toString(36).substring(7);
+      console.log("BotMessage: ", botMessage);
+
+      //메시지 칸 비우기
       setIsTyping(false);
+
+      // 메시지 화면에 출력
       setMessages((previousMessages) => GiftedChat.append(previousMessages, [botMessage]));
   
-      // 이전 대화 내역 업데이트
-      setChatHistory(prevHistory => `${prevHistory}\n사용자: ${question}\nChatGPT: ${botMessage.text}`);
-  
+      // 히스토리 업데이트
       saveChatHistory();
     } catch (error) {
+      // 에러가 났을 경우 메시지 칸 비우고 에러 메시지 화면에 출력
       console.error("Error generating response:", error);
       setIsTyping(false);
       const errorMessage = {

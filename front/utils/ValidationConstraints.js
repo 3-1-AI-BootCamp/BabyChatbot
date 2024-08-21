@@ -1,5 +1,6 @@
 import { validate } from 'validate.js'
 
+// 회원가입 폼의 유효성 검사를 위한 함수
 export const validateString = (id, value) => {
     const constraints = {
         presence: {

@@ -3,6 +3,7 @@ import { Welcome, Login, Register, Home, Chat, Profile, Saved, Fun, HospitalMapS
 import { NavigationContainer } from '@react-navigation/native'
 import BottomTabNavigation from './BottomTabNavigation'
 
+// 페이지 사이의 연결 설정
 const Stack = createNativeStackNavigator()
 
 const AppNavigation = () => {
