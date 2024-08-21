@@ -43,61 +43,61 @@ public class LLMController {
 
 
 //    태그 구분해서 실행할 서비스 로직 결정
-//    @PostMapping("/request")
-//    public ResponseEntity<String> chatTags(@RequestBody CommunicationRequest request) {
+    @PostMapping("/request")
+    public ResponseEntity<String> responseControll(@RequestBody CommunicationRequest request) {
 //        String labelTag = tagLabeling.sentenceTagging(request.getChatSentence());
+
+        // TagNamespaceMapper를 사용하여 태그를 네임스페이스로 변환
+        String mappingNamespace = TagNamespaceMapper.getNamespace("육아 의학 정보");
+
+        // 변환된 네임스페이스를 사용하여 querySimilarQuestions 호출
+        List<Map<String, Object>> q_a_list = pineconeService.querySimilarQuestions(request.getChatSentence(), 5, mappingNamespace, 0.7f);
+
+        return gptService.generatePrompt(request.getChatSentence(), q_a_list);
+    }
+
+//    사용자 질문을 받아서 태깅하고 q_a_list, namespace, gpt response 다 반환하기 위한 메서드
+//    @PostMapping("/request")
+//    public ResponseEntity<PerformanceData> requestAllDataFormat(@RequestBody CommunicationRequest request) {
+//        long startTime = System.currentTimeMillis();
 //
-//        // TagNamespaceMapper를 사용하여 태그를 네임스페이스로 변환
+//        String userQuestion = request.getChatSentence();
+//        int topK = request.getTopK();
+//        float similarity = request.getSimilarity();
+////        String gptRole = request.getGptRole();
+//        String labelTag = tagLabeling.sentenceTagging(userQuestion);
 //        String mappingNamespace = TagNamespaceMapper.getNamespace(labelTag);
 //
-//        // 변환된 네임스페이스를 사용하여 querySimilarQuestions 호출
-//        List<Map<String, Object>> q_a_list = pineconeService.querySimilarQuestions(request.getChatSentence(), 5, mappingNamespace);
+//        List<Map<String, Object>> qaList = pineconeService.querySimilarQuestions(userQuestion, topK, mappingNamespace, similarity);
 //
-//        return gptService.generatePrompt(request.getChatSentence(), q_a_list);
+//        ResponseEntity<String> gptResponseEntity = gptService.generatePrompt(userQuestion, qaList);
+//        String gptResponse = gptResponseEntity.getBody(); // ResponseEntity에서 실제 응답 추출
+//
+//        long endTime = System.currentTimeMillis();
+//        long responseTime = endTime - startTime;
+//
+//        PerformanceData performanceData = new PerformanceData(
+//            userQuestion,
+//            mappingNamespace,
+//            qaList,
+//            gptResponse,
+//            responseTime
+//        );
+//
+//        return ResponseEntity.ok(performanceData);
 //    }
-
-//    q_a_list, namespace, gpt response 다 반환하기 위한 메서드
-    @PostMapping("/request")
-    public ResponseEntity<PerformanceData> requestAllDataFormat(@RequestBody CommunicationRequest request) {
-        long startTime = System.currentTimeMillis();
-
-        String userQuestion = request.getChatSentence();
-        int topK = request.getTopK();
-        float similarity = request.getSimilarity();
-//        String gptRole = request.getGptRole();
-        String labelTag = tagLabeling.sentenceTagging(userQuestion);
-        String mappingNamespace = TagNamespaceMapper.getNamespace(labelTag);
-
-        List<Map<String, Object>> qaList = pineconeService.querySimilarQuestions(userQuestion, topK, mappingNamespace, similarity);
-
-        ResponseEntity<String> gptResponseEntity = gptService.generatePrompt(userQuestion, qaList);
-        String gptResponse = gptResponseEntity.getBody(); // ResponseEntity에서 실제 응답 추출
-
-        long endTime = System.currentTimeMillis();
-        long responseTime = endTime - startTime;
-
-        PerformanceData performanceData = new PerformanceData(
-            userQuestion,
-            mappingNamespace,
-            qaList,
-            gptResponse,
-            responseTime
-        );
-
-        return ResponseEntity.ok(performanceData);
-    }
 
 
     
 //    요청 오면 fast api 서버로 비동기 요청 보내고 db에 저장하도록 수정 
-    @PostMapping("/requestDB")
-    public ResponseEntity<PerformanceData> requestDB(@RequestBody CommunicationRequest request) {
-        ResponseEntity<PerformanceData> rsFormat = requestAllDataFormat(request);
-
-//        리턴 받는거 없이 그냥 잘 저장되었다고 출력
-
-        return rsFormat;
-    }
+//    @PostMapping("/requestDB")
+//    public ResponseEntity<PerformanceData> requestDB(@RequestBody CommunicationRequest request) {
+//        ResponseEntity<PerformanceData> rsFormat = requestAllDataFormat(request);
+//
+////        리턴 받는거 없이 그냥 잘 저장되었다고 출력
+//
+//        return rsFormat;
+//    }
     
     
 }

@@ -48,6 +48,9 @@ public class SecurityConfig {
 
 //                        api post 요청(테스트 관련)
                         .requestMatchers("/mongoTest/**").permitAll()
+
+//                         mongoDB 데이터 검색 용
+                        .requestMatchers("/api/search").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());

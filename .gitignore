@@ -21,6 +21,7 @@ pythonServer/questionData/*
 
 
 
+.expo/
 
 # General ignores
 .DS_Store

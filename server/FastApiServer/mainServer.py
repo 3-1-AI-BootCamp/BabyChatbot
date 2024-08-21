@@ -27,6 +27,11 @@ deberta_tokenizer, deberta_model = initModels.deberta_model()
 
 
 
+@app.get("/")
+def runningCheck():
+    return 'server is running'
+
+
 # 텍스트 임베딩 요청 처리
 @app.post("/embed", response_model=embedType.EmbeddingResponse)
 async def order_create_embeddings(request: embedType.EmbeddingRequest):

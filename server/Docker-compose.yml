@@ -2,7 +2,7 @@ services:
   spring-boot-app:
     container_name: spring-server
     build:
-      context: ./springPinecone
+      context: ./SpringbootServer
       dockerfile: Dockerfile
     image: spring-img
     ports:
@@ -13,7 +13,7 @@ services:
   fastapi-app:
     container_name: fastapi-server
     build:
-      context: ./FastApiEmbedding
+      context: ./FastApiServer
       dockerfile: Dockerfile
     image: fastapi-img
     ports:
