@@ -6,8 +6,8 @@ import { COLORS } from '../constants'
 import { Home, Profile, Saved } from '../screens'
 import { useTheme } from '../themes/ThemeProvider'
 
+// home의 구성요소를 설정
 const Tab = createBottomTabNavigator()
-
 
 const BottomTabNavigation = () => {
     const { colors } = useTheme()

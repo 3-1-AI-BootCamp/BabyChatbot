@@ -8,6 +8,7 @@ import ChineseFortune from './chineseFortune';
 import { images } from '../../constants';
 import { host, port } from '@env';
 
+// 오늘의 운세 화면
 const { width, height } = Dimensions.get('window');
 
 const wp = (percentage) => (width * percentage) / 100;
@@ -19,6 +20,7 @@ const Fun = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const [selectedTab, setSelectedTab] = useState('zodiacFortune');
+    // 지금은 임시로 사용자 데이터를 하드코딩, mongoDB에 관련 데이터가 있어 바로 받아올 수 있음
     const userData = {
         name: '홍길동',
         gender: '남성',
@@ -34,10 +36,13 @@ const Fun = () => {
 
     const renderContent = () => {
         switch (selectedTab) {
+            // 별자리 탭
             case 'zodiacFortune':
                 return <ZodiacFortune birthDate={userData.birthDate} />;
+            // 사주 탭
             case 'sajuFortune':
                 return <SajuFortune userData={userData} host={host} port={port} />;
+            // 십이지 탭
             case 'chineseFortune':
                 return <ChineseFortune userData={userData} host={host} port={port} />;
             default:

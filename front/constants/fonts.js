@@ -1,3 +1,4 @@
+// 폰트 관련 상수 정의
 export const FONTS = {
     black: require('../assets/fonts/Poppins-Black.ttf'),
     blackItalic: require('../assets/fonts/Poppins-BlackItalic.ttf'),

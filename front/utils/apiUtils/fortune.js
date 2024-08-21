@@ -1,9 +1,10 @@
 const fortuneConfig = {
     '사주': { selectedTab: 'sajuFortune', message: "사주에 대한 정보는 아래 링크를 클릭하여 확인해주세요." },
     '운세': { selectedTab: 'zodiacFortune', message: "운세에 대한 정보는 아래 링크를 클릭하여 확인해주세요." },
-    //'십이지 운세': { selectedTab: 'chineseFortune', message: "십이지에 대한 정보는 아래 링크를 클릭하여 확인해주세요." },
+    '십이지 운세': { selectedTab: 'chineseFortune', message: "십이지에 대한 정보는 아래 링크를 클릭하여 확인해주세요." },
 };
 
+// 운세 관련 태그가 나왔을 경우의 처리... 인데 이거 흔적기관임
 export const getFortune = async (tag) => {
     const config = fortuneConfig[tag];
     if (!config) {

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, SafeAreaView, Dimensions, StatusBar, Alert } from 'react-native';
 import { useTheme } from '../themes/ThemeProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { images } from '../constants';
 
 const { width, height } = Dimensions.get('window');
 const wp = (percentage) => (width * percentage) / 100;
 const hp = (percentage) => (height * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
+// 채팅 히스토리 화면
 const Saved = ({ navigation }) => {
   const { colors } = useTheme();
   const [savedChats, setSavedChats] = useState([]);
@@ -83,19 +85,19 @@ const Saved = ({ navigation }) => {
         <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
           <Image
             style={styles.headerIcon}
-            source={require('../assets/images/back.png')}
+            source={images.back}
           />
         </TouchableOpacity>
         <View style={styles.iconContainer}>
           <Image
             style={styles.icon}
-            source={require('../assets/images/icon.jpg')}
+            source={images.icon}
           />
         </View>
         <TouchableOpacity style={styles.headerButton} onPress={clearAllChats}>
           <Image
             style={styles.headerIcon}
-            source={require('../assets/images/trash.png')}
+            source={images.trash}
           />
         </TouchableOpacity>
       </View>

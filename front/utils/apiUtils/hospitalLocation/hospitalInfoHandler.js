@@ -1,13 +1,14 @@
-import { host, port } from '@env';
 import { extractLocationAndHospital, createResponse } from './utils';
 
-export const handleHospitalInfo = async (question, userLocation, hospitalType) => {
+// 만약 병원 정보를 원했다면...
+export const handleHospitalInfo = async (question, userLocation, hospitalType, host, port) => {
+  // 병원 이름과 위치 추출
   const { location, hospitalName } = await extractLocationAndHospital(question);
   console.log("Location: ", location);
   console.log("Hospital Name: ", hospitalName);
 
   try {
-    const searchUrl = `http://${host}:${port}/api/search`;
+    // 병원유형과 사용자위치를 필수로 제공하고, 질문에서 병원 이름과 지역이 추출되었다면 병원 이름과 지역도 제공
     const requestBody = {
       사용자위치: {
         위도: userLocation.latitude,
@@ -23,6 +24,8 @@ export const handleHospitalInfo = async (question, userLocation, hospitalType) =
       requestBody["지역"] = location;
     }
 
+    // mongoDB에서 병원 정보를 검색한 후 가져옴(백엔드 처리)
+    const searchUrl = `http://${host}:${port}/api/search`;
     const searchResponse = await fetch(searchUrl, {
       method: 'POST',
       headers: {
@@ -35,6 +38,7 @@ export const handleHospitalInfo = async (question, userLocation, hospitalType) =
 
     console.log('Search Data:', searchData);
 
+    // 검색 결과가 존재한다면 해당 병원에 대한 정보 출력
     if (Array.isArray(searchData) && searchData.length > 0) {
       const { 요양기관명, 종별코드명, 주소, 전화번호, 병원홈페이지, 진료과목 } = searchData[0];
 
@@ -42,12 +46,14 @@ export const handleHospitalInfo = async (question, userLocation, hospitalType) =
 
       let responseText = '';
 
+      // 지역이 있었을 경우 지역 소개 추가
       if (location == null) {
         responseText = `${location}에 있는 ${요양기관명}에 대해 설명드리겠습니다.`;
       }
 
       responseText += `${요양기관명}은(는) ${종별코드명}에 속하며,`;
 
+      // 주소, 전화번호, 병원홈페이지, 진료과목이 있을 경우 추가
       if (주소 && 주소.trim() !== '') {
         responseText += ` 주소는 ${주소}입니다.`;
       }

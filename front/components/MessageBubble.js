@@ -4,6 +4,7 @@ import { Bubble } from 'react-native-gifted-chat';
 import { COLORS, images } from '../constants';
 import { useNavigation } from '@react-navigation/native';
 
+// 메시지 버블 컴포넌트
 const MessageBubble = (props) => {
     const { currentMessage, onQuickReply } = props;
     const navigation = useNavigation();

@@ -1,3 +1,5 @@
+// 이미지 모음집
+
 const logo = require('../assets/images/logo.png')
 const robot = require('../assets/images/robot.png')
 const back = require('../assets/images/back.png')
@@ -9,6 +11,7 @@ const Vector = require('../assets/images/Vector.png')
 const lock_ = require('../assets/images/lock_.png')
 const people = require('../assets/images/people.png')
 const gear = require('../assets/images/gear.png')
+const trash = require('../assets/images/trash.png')
 
 export default {
     logo,
@@ -21,7 +24,8 @@ export default {
     Vector,
     lock_,
     people,
-    gear
+    gear,
+    trash
 }
 
 // source={images.

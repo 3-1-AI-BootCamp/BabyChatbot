@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, StyleSheet, StatusBar, Dimensions, SafeAreaView } from 'react-native';
 import { useTheme } from '../themes/ThemeProvider';  // 테마 프로바이더 import 추가
+import { images } from '../constants';
 
+// 앱 위쪽 바 컴포넌트
 const { width, height } = Dimensions.get('window');
 
 const wp = (percentage) => (width * percentage) / 100;
@@ -16,13 +18,13 @@ const TopBar = ({ onBackPress, onListPress }) => {
       <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
       <View style={[styles.header, { backgroundColor: colors.primary }]}>
         <TouchableOpacity onPress={onBackPress} style={styles.headerButton}>
-          <Image source={require('../assets/images/back.png')} style={styles.icon} />
+          <Image source={images.back} style={styles.icon} />
         </TouchableOpacity>
         <View style={styles.iconContainer}>
-          <Image source={require('../assets/images/icon.jpg')} style={styles.centerIcon} />
+          <Image source={images.icon} style={styles.centerIcon} />
         </View>
         <TouchableOpacity onPress={onListPress} style={styles.headerButton}>
-          <Image source={require('../assets/images/list.png')} style={styles.icon} />
+          <Image source={images.list} style={styles.icon} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
