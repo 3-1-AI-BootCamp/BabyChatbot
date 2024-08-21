@@ -1,10 +1,10 @@
-FastApiEmbedding
-텍스트를 임베딩해주는 fast api 서버(허깅 페이스 multilingual 모델 사용)
+SpringbootServer
+요청 처리 및 llm 응답 서비스
+
+FastapiServer
+텍스트 임베딩 및 라벨링
 
 
-springPinecone
-pinecone 벡터db 기반으로 백엔드 구성
 
-
-로그인 미구현
-백엔드 api 요청만 가능한 상태
+hospital, medical info 처리 완료
+채팅 로그 저장 기능 아직 미구현
