@@ -7,6 +7,7 @@ const { width, height } = Dimensions.get('window');
 const wp = (percentage) => (width * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
+// 별자리 운세 처리
 const ZodiacFortune = ({ birthDate }) => {
     const [fortune, setFortune] = useState('');
     const [translatedFortune, setTranslatedFortune] = useState('');
@@ -15,6 +16,7 @@ const ZodiacFortune = ({ birthDate }) => {
         fetchFortune();
     }, []);
 
+    // 생년월일을 통해 별자리를 구함
     const getZodiacSign = (birthDate) => {
         const date = new Date(birthDate);
         const day = date.getDate();
@@ -34,17 +36,23 @@ const ZodiacFortune = ({ birthDate }) => {
         if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'sagittarius';
     };
 
+    // ohmanda.com에서 별자리 별 운세를 가져오는 함수
     const fetchFortune = async () => {
         try {
             const zodiacSign = getZodiacSign(birthDate);
             const response = await axios.get(`https://ohmanda.com/api/horoscope/${zodiacSign}/`);
+
+            // 운세 받아옴
             setFortune(response.data.horoscope);
+
+            // 그 운세를 한국어로 번역
             fetchTranslation(response.data.horoscope);
         } catch (error) {
             console.error('Error fetching zodiac fortune:', error);
         }
     };
 
+    // 구글 번역 API를 이용해 영어로 된 운세를 한국어로 번역하는 함수
     const fetchTranslation = async (text) => {
         try {
             const response = await axios.post(

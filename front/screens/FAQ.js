@@ -11,6 +11,7 @@ const wp = (percentage) => (width * percentage) / 100;
 const hp = (percentage) => (height * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
+// 지원정보 화면
 const FAQ = () => {
   const navigation = useNavigation();
   const route = useRoute();

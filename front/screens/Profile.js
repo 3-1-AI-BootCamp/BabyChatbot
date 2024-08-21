@@ -11,6 +11,7 @@ const wp = (percentage) => (width * percentage) / 100;
 const hp = (percentage) => (height * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
+// 사용자 프로필 화면
 const Profile = ({ navigation, route }) => {
     const { colors } = useTheme();
     const [isEditing, setIsEditing] = useState(false);
@@ -22,6 +23,7 @@ const Profile = ({ navigation, route }) => {
         profileImage: null
     });
 
+    // 다른 함수로부터 전달받은 사용자 정보를 userInfo 상태에 설정
     useEffect(() => {
         if (route.params && route.params.userData) {
             const { email, kidName, gender, birthYear, birthMonth, birthDay, profileImage } = route.params.userData;
@@ -39,7 +41,9 @@ const Profile = ({ navigation, route }) => {
         setIsEditing(!isEditing);
     };
 
+    // 저장 버튼을 눌렀을 경우 처리
     const handleSave = async () => {
+        // 현재 입력한 프로필을 서버에 저장... 이나 현재는 엔드포인트가 구현되어 있지 아니함!
         try {
             const response = await fetch(`http://${host}:${port}/api/auth/updateProfile`, {
                 method: 'POST',
@@ -68,10 +72,12 @@ const Profile = ({ navigation, route }) => {
         }
     };
 
+    // 로그아웃 시도 시 현재는 쿠키 같은 것이 구현되어 있지 않아 단순히 로그인 페이지로만 이동함
     const handleLogout = () => {
         navigation.navigate('Login');
     };
 
+    // 프로필 이미지 수정 기능
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 

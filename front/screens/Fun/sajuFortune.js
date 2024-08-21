@@ -5,6 +5,7 @@ const { width, height } = Dimensions.get('window');
 const wp = (percentage) => (width * percentage) / 100;
 const fp = (percentage) => (Math.sqrt(width * height) * percentage) / 100;
 
+// 사주 처리
 const SajuFortune = ({ userData, host, port }) => {
     const [fortune, setFortune] = useState('');
 
@@ -12,6 +13,7 @@ const SajuFortune = ({ userData, host, port }) => {
         fetchFortune();
     }, []);
 
+    // 이름, 성별, 생일 정보를 통해 사주 운세 맡기는 함수
     const fetchFortune = async () => {
         try {
             const messages = [

@@ -34,10 +34,7 @@ const initialState = {
     formIsValid: false,
 };
 
-const years = Array.from({ length: 100 }, (_, i) => ({ label: `${new Date().getFullYear() - i}`, value: `${new Date().getFullYear() - i}` }));
-const months = Array.from({ length: 12 }, (_, i) => ({ label: `${i + 1}`, value: `${i + 1}` }));
-const days = Array.from({ length: 31 }, (_, i) => ({ label: `${i + 1}`, value: `${i + 1}` }));
-
+// 회원가입 화면
 const Register = ({ navigation }) => {
     const [formState, dispatchFormState] = useReducer(reducer, initialState);
     const [isLoading, setIsLoading] = useState(false);
@@ -53,17 +50,22 @@ const Register = ({ navigation }) => {
         [dispatchFormState]
     );
 
+    // 회원가입 버튼을 눌렀을 때
     const authHandler = async () => {
+        // 처리 전까지 잠시 대기
         setIsLoading(true);
 
         try {
+            // 8자리로 입력한 생년월일을 년, 월, 일로 쪼갬
             const birthdate = `${formState.inputValues.birthYear}-${formState.inputValues.birthMonth.padStart(2, '0')}-${formState.inputValues.birthDay.padStart(2, '0')}`;
 
+            // 값을 백엔드 엔드포인트로 전송
             const response = await fetch(`http://${host}:${port}/api/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                // 값은 이메일(아이디), 비밀번호, 아이 이름, 아이 성별, 아이 생년월일로 구성
                 body: JSON.stringify({
                     email: formState.inputValues.email,
                     password: formState.inputValues.password,
@@ -75,6 +77,7 @@ const Register = ({ navigation }) => {
 
             const data = await response.json();
 
+            // 회원가입 성공 시 로그인 화면으로 이동
             if (response.ok) {
                 setIsLoading(false);
                 navigation.navigate('Login');

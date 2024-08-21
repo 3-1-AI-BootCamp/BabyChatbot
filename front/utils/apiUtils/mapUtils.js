@@ -1,5 +1,6 @@
 import { Linking } from 'react-native';
 
+// 지도 열기
 export const openMap = async (url) => {
   // URL 생성
   console.log('Generated Map URL:', url);
