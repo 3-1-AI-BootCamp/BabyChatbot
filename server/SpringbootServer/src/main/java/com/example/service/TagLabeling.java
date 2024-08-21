@@ -30,6 +30,5 @@ public class TagLabeling {
         
         throw new RuntimeException("Label not found in the response");
     }
-    
 
 }

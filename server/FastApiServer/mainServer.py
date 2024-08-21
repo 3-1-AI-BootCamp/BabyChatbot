@@ -3,6 +3,7 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 import structure.embedClass as embedType
 import structure.labelClass as labelType
+import structure.performenceData as performenceType
 from config import initializeModels as initModels
 
 
@@ -48,6 +49,16 @@ async def order_classify_tag(request: labelType.TextRequest):
     
     return labelType.TextResponse(label=predicted_label)
     
+
+@app.post("/save_chat_log")
+async def save_chat(request: performenceType.PerformenceResponse):
+    from service import saveChatLogs
+    try:
+        saved_log_id = saveChatLogs.save_chat_log(request)
+        return {"message": "Chat log saved successfully", "id": saved_log_id}
+    except Exception as e:
+        return {"error": f"Failed to save chat log: {str(e)}"}
+
 
 
 if __name__ == "__main__":

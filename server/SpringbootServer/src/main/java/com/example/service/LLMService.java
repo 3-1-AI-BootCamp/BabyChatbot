@@ -58,7 +58,7 @@ public class LLMService {
     }
 
 
-//    gpt-3.5-turbo 로 메세지 생성
+//    gpt-4o 로 응답 메세지 생성
     public ResponseEntity<String> generateResponse(@RequestBody String prompt) {
         // ChatCompletionRequest 생성
         ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
@@ -77,35 +77,7 @@ public class LLMService {
     }
 
 
-//    prompt 생성
-//    public ResponseEntity<String> generatePrompt(String userQuestion, List<Map<String, String>> q_a_list) {
-//        StringBuilder context = new StringBuilder();
-//
-//        for (int i = 0; i < q_a_list.size(); i++) {
-//            Map<String, String> qa = q_a_list.get(i);
-//            String question = qa.get("question");
-//            String answer = qa.get("answer");
-//
-//            if (question != null && answer != null) {
-//                context.append("관련 질문 ").append(i + 1).append(": ").append(question).append("\n");
-//                context.append("관련 답변 ").append(i + 1).append(": ").append(answer).append("\n\n");
-//            }
-//        }
-//
-//        String prompt = String.format(
-//            "다음은 사용자의 질문과 관련된 이전 질문-답변 쌍입니다:\n\n%s\n사용자 질문: %s\n\n" +
-//            "위의 관련 정보를 참고하여 사용자의 질문에 대해 정확하고 상세한 답변을 제공해주세요. " +
-//            "필요한 경우 이전 답변들의 정보를 활용하되, 현재 질문에 가장 적절한 새로운 답변을 생성해 주세요.",
-//            context.toString(), userQuestion
-//        );
-//
-//        return generateResponse(prompt);
-//    }
-
-
-
-
-
+//    gpt role, 사용자 질문, 백터 서치 결과로 최종 프롬프트를 작성하는 메서드
     public ResponseEntity<String> generatePrompt(String userQuestion, List<Map<String, Object>> q_a_list) {
         StringBuilder promptBuilder = new StringBuilder();
 
