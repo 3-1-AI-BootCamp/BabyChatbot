@@ -1,8 +1,14 @@
 node_modules
 .env
 
-# api key 및 mongo url 보호용
-ChatServer/gptChat/src/main/resources/application.properties
+# Ignore all files in the FastAPI models directory
+server/FastApiServer/models/*
+
+# But don't ignore the models directory itself (optional)
+!server/FastApiServer/models/.gitkeep
+
+# Ignore Spring Boot application.properties
+server/SpringbootServer/src/main/resources/application.properties
 
 # 용량 큰 model 파일 전송 시 오류 방지
 front/filter/*
@@ -13,4 +19,30 @@ front/constants/badwords.js
 # 모델 파일 삭제
 pythonServer/questionData/*
 
-ChatServer/springPinecone/src/main/resources/*
+
+
+.expo/
+
+# General ignores
+.DS_Store
+Thumbs.db
+
+# Python ignores
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Java ignores
+*.class
+*.jar
+*.war
+
+# IDE ignores
+.idea/
+.vscode/
+*.iml
+
+# Build ignores
+target/
+build/
+dist/
