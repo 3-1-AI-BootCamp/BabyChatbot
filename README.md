@@ -6,5 +6,4 @@ FastapiServer
 
 
 
-hospital, medical info 처리 완료
-채팅 로그 저장 기능 아직 미구현
+모든 기능 구현 완료
