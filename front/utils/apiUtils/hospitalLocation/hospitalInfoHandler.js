@@ -47,7 +47,7 @@ export const handleHospitalInfo = async (question, userLocation, hospitalType, h
       let responseText = '';
 
       // 지역이 있었을 경우 지역 소개 추가
-      if (location == null) {
+      if (location != null) {
         responseText = `${location}에 있는 ${요양기관명}에 대해 설명드리겠습니다.`;
       }
 

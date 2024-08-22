@@ -69,12 +69,12 @@ export const extractLocationAndHospital = async (question) => {
     해당 질문에서 지역과 병원이름을 추출하세요.
     지역은 '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'중 하나입니다.
     병원이름은 실제 병원 이름입니다. 예를 들어 '서울대학교병원'입니다. '정형외과'는 병원이름이 아닙니다.
-    답변 형식은 아래와 같이 주세요.
+    답변 형식은 아래와 같이 주되, 절대로 변하지 않아야 합니다. 임의로 변경하는 일은 반드시 없도록 하세요.
+    금지사항: 답변에 json, 백틱와 같은 코드 블록을 절대로 사용하지 마세요.
     {
-      location: string,
-      hospitalName: string
+      "location": string,
+      "hospitalName": string
     }
-    큰 따옴표를 붙이지 마세요.
     만일 질문의 지역에서 오타가 있으면 수정해서 주세요.
     만일 값에서 지역이나 병원 이름을 찾을 수 없다면 null로 설정하세요.
     `;
@@ -98,12 +98,34 @@ export const extractLocationAndHospital = async (question) => {
     const responseData = await response.json();
     const gptMessage = responseData.choices[0].message.content;
 
-    console.log("gptMessage: ", gptMessage);
+    console.log("gptMessage:", gptMessage);
 
-    let location = gptMessage.split('location:')[1].split(',')[0].trim();
-    let hospitalName = gptMessage.split('hospitalName:')[1].trim();
-  
-    return { location, hospitalName };
+    // JSON 파싱을 시도합니다.
+    try {
+        const parsedMessage = JSON.parse(gptMessage);
+        return {
+            location: parsedMessage.location,
+            hospitalName: parsedMessage.hospitalName
+        };
+    } catch (error) {
+        console.error("JSON 파싱 실패:", error);
+        
+        // 파싱에 실패한 경우, 문자열 처리로 fallback
+        let location = null;
+        let hospitalName = null;
+
+        if (gptMessage.includes('location:')) {
+            location = gptMessage.split('location:')[1].split(',')[0].trim();
+            location = location === 'null' ? null : location;
+        }
+
+        if (gptMessage.includes('hospitalName:')) {
+            hospitalName = gptMessage.split('hospitalName:')[1].trim();
+            hospitalName = hospitalName === 'null' ? null : hospitalName;
+        }
+
+        return { location, hospitalName };
+    }
 };
 
 // 병원에 가야된다고 판단했을 때 실행되는 함수

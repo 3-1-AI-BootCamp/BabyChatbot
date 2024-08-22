@@ -4,7 +4,7 @@ import { getUserLocation } from '../utils/locationUtils';
 import { getHospital, getMedicalInfo, getBabyProduct, getTag } from '../utils/apiUtils';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { exampleQuestions, badwords } from '../constants';
-import { host, port } from '@env';
+import { host, port, fasthost, fastport } from '@env';
 
 // 사용자 대화 챗 관리
 const useChat = (navigation) => {
@@ -115,7 +115,7 @@ const useChat = (navigation) => {
     // 각 태그 별 처리
     try {
       // 태그 분류 모델을 통해 대화에서 태그 분류
-      const { tags } = await getTag(question, host, port);
+      const { tags } = await getTag(question, fasthost, fastport);
       console.log('Tags:', tags);
   
       let botMessage;
@@ -125,7 +125,7 @@ const useChat = (navigation) => {
         botMessage = await getHospital(userLocation, question, host, port);
       } else if (tags.includes('아기 용품')) {
         botMessage = await getBabyProduct(question);
-      } else if (tags.includes('육아 의학 상담')) {
+      } else if (tags.includes('육아 의학 정보')) {
         botMessage = await getMedicalInfo(question, host, port);
       } else { // 태그가 "기타" 일 경우 이쪽으로 빠짐
         botMessage = {

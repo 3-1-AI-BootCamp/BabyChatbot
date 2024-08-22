@@ -39,7 +39,7 @@ export const getHospital = async (userLocation, question, host, port) => {
         } else if (hospitalInfo && !isDirectionsRequest) { // 병원 정보를 요청하는 경우
             response = await handleHospitalInfo(question, userLocation, hospitalType, host, port);
         } else if (isDirectionsRequest) { // 길찾기를 요청하는 경우
-            response = await handleDirectionsRequest(question, userLocation, hospitalType, host, port);
+            response = await handleDirectionsRequest(question, userLocation, host, port);
         } else if (needHospital && !isDirectionsRequest) { // 병원에 가야 한다고 판단한 경우
             response = await handleNeedHospital(question, userLocation, hospitalType);
         } else { // 모두 아니라고 판단한 경우

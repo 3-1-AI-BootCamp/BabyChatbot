@@ -5,7 +5,9 @@ import { openMap } from '../mapUtils';
 export const handleDirectionsRequest = async (question, userLocation, host, port) => {
     try {
       // 병원 이름과 위치 추출
-      const { location, hospitalName } = extractLocationAndHospital(question);
+      const { location, hospitalName } = await extractLocationAndHospital(question);
+
+      console.log('Location, Hospital Name show:', location, hospitalName);
   
       if (!hospitalName) {
         throw new Error('병원 이름이 필요합니다.');
@@ -32,6 +34,7 @@ export const handleDirectionsRequest = async (question, userLocation, host, port
         },
         body: JSON.stringify(requestBody),
       });
+      console.log('Search Response:', searchResponse);
   
       const searchData = await searchResponse.json();
   
@@ -46,8 +49,6 @@ export const handleDirectionsRequest = async (question, userLocation, host, port
   
       // 찾은 병원과 현재 위치를 이용한 길찾기 URL 검색
       const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.latitude},${userLocation.longitude}&destination=${hospital.좌표.Y},${hospital.좌표.X}&dirflg=d`;
-  
-      console.log('Directions URL:', directionsUrl);
 
       // 길찾기 URL을 이용해 지도 열기
       openMap(directionsUrl);
